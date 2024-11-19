@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>aoe wordle thingy</title>
+
+  <!--<link rel="icon" href="/static/res/favicon.ico" type="image/x-icon">-->
+  <!--<script src="/static/lib/socket.io.js"></script>-->
+  <script src="/static/lib/main.js"></script>
+  <script src="/static/lib/theme.js"></script>
+  <!--<script src="/static/lib/dashboard.js"></script>-->
+
+  <!-- Atkinson Hyperlegible Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+Mono:wght@100..900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/style/style.css">
+  <!--<link rel="stylesheet" href="/static/style/mobile.css">-->
+</head>
+
+<body class="font-size-medium font-medium">
+  <div class="header">
+    <button class="header-button bevel">
+      <img id="theme-icon" class="icon click" src="../static/res/mode-light.svg" alt="Light theme"
+        onclick="onThemeSwitch();">
+    </button>
+    <!--<button>-->
+
+    <!--<img class="icon" src="../static/res/mode-light.svg" alt="Light theme">-->
+    <!--</button>-->
+  </div>
+  <div class="game">
+    <div class="input-container">
+      <input id="player-input" name="" placeholder="Input player" class="bevel player-input font-large"
+        onchange="onPlayerInput()">
+    </div>
+    <div class="players">
+
+      <!--<div id="goal-player" class="player bevel">-->
+      <!--  <div id="name">-->
+      <!--    TheViper-->
+      <!--  </div>-->
+      <!--  <div class="player-info">-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> Age </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 33 </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description">Active since</div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 2002</div>-->
+      <!---->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> Active til </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 2002 </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> Countries: </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> Norway </div>-->
+      <!--        <div class="player-info-value-item"> Germany </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> 1v1s played: </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 2002 </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> TGs played </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 400 </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> Earnings </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> 350000 </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="player-info-elem">-->
+      <!--      <div class="player-info-description"> Teams: </div>-->
+      <!--      <div class="player-info-value">-->
+      <!--        <div class="player-info-value-item"> TyRanT </div>-->
+      <!--        <div class="player-info-value-item"> Team Secret </div>-->
+      <!--        <div class="player-info-value-item"> GamerLegion </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--  </div>-->
+      <!---->
+      <!---->
+      <!--</div>-->
+      <div id="guessed-players">
+      <!--  <div id="goal-player" class="player bevel">-->
+      <!--    <div id="name">-->
+      <!--      TheViper-->
+      <!--    </div>-->
+      <!--    <div class="player-info">-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> Age </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 33 </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description">Active since</div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 2002</div>-->
+      <!---->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> Active til </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 2002 </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> Countries: </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> Norway </div>-->
+      <!--          <div class="player-info-value-item"> Germany </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> 1v1s played: </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 2002 </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> TGs played </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 400 </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> Earnings </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> 350000 </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="player-info-elem">-->
+      <!--        <div class="player-info-description"> Teams: </div>-->
+      <!--        <div class="player-info-value">-->
+      <!--          <div class="player-info-value-item"> TyRanT </div>-->
+      <!--          <div class="player-info-value-item"> Team Secret </div>-->
+      <!--          <div class="player-info-value-item"> GamerLegion </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--  </div>-->
+      </div>
+    </div>
+  </div>
+  <script>
+    setTheme();
+    loadFromLocalStorage();
+  </script>
+</body>

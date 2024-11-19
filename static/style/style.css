@@ -1,0 +1,153 @@
+* {
+  font-family: 'Atkinson Hyperlegible';
+  transition: background-color 200ms ease;
+  font-size: inherit;
+}
+
+.font-size-medium .font-large {
+  font-size: 1.5rem;
+}
+
+.font-size-medium .font-medium {
+  font-size: 1.2rem;
+}
+
+.font-size-medium .font-small {
+  font-size: 0.9rem;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+body {
+  margin: 0;
+  background-color: var(--col-1);
+  color: var(--col-text);
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-light {
+  --col-header: #dedede;
+  --col-text: #2b2b2b;
+
+  --col-1: #ffffff;
+  --col-2: #f0f0f0;
+  --col-3: #dfdfdf;
+  --col-4: #d1d1d1;
+
+  --col-resolved: #cdcdcd;
+  --svg-filter: invert(0%) sepia(27%) saturate(1823%) hue-rotate(343deg) brightness(107%) contrast(78%);
+}
+
+.theme-dark {
+  --col-header: #1a191c;
+  --col-text: #d8d8d8;
+
+  --col-1: #242326;
+  --col-2: #2e2d31;
+  --col-3: #38373b;
+  --col-4: #49484c;
+
+  --svg-filter: invert(96%) sepia(0%) saturate(0%) hue-rotate(191deg) brightness(91%) contrast(94%)
+}
+
+.bevel {
+  border-radius: 7px;
+}
+
+.click {
+  cursor: pointer;
+  transition: translate 70ms ease-out;
+}
+
+.header {
+  display: flex;
+  align-items: right;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  background-color: var(--col-1);
+  z-index: 10;
+}
+
+.header-button {
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  border: none;
+  background: none;
+}
+
+.icon {
+  filter: var(--svg-filter);
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  border-radius: 50px;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.game {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px 20px;
+}
+
+.input-container {
+  margin: 10px;
+}
+
+.player-input {
+  max-width: 400px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border-style: solid;
+  text-align: center;
+
+  background-color: var(--col-4);
+  color: var(--col-text);
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px;
+  margin: 10px;
+
+  background-color: var(--col-4);
+}
+
+.player-info {
+  display: flex;
+  gap: 5px 20px;
+  flex-wrap: wrap;
+}
+
+.player-info-elem {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-info-value {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+}
+
+.player-info-value-item {
+  padding: 3px 12px;
+  border-radius: 15px;
+  background-color: green;
+}
+
+.correct {
+  background-color: green;
+}
+
+.wrong {
+  background-color: red;
+}
