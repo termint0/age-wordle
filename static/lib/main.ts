@@ -55,7 +55,7 @@ async function makeInitialGuess(names: string): Promise<ServerResp[]> {
   return respJson;
 }
 
-async function loadFromLocalStorage() {
+async function loadFromLocalStorage(): Promise<void> {
   const gameHash = await getGameHash();
   if (gameHash.toString() !== localStorage.getItem("hash")) {
     onGameReset();
@@ -75,7 +75,7 @@ async function loadFromLocalStorage() {
 
 }
 
-function onGameReset() {
+function onGameReset(): void {
   localStorage.removeItem("hash");
   localStorage.removeItem("guesses");
 
@@ -86,7 +86,7 @@ function onGameReset() {
   playersDiv.innerText = '';
 }
 
-async function onPlayerInput() {
+async function onPlayerInput(): Promise<void> {
   const input = document.getElementById("player-input") as null | HTMLInputElement;
   if (input === null) {
     return;
@@ -142,7 +142,7 @@ function addGuessedPlayer(player: Player, evaluation: GuessEvaluation): void {
   localStorage.setItem("guesses", lsGuesses);
 }
 
-function createPlayerElement(player: Player, evaluation: GuessEvaluation) {
+function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const playerDiv = document.createElement("div");
   playerDiv.classList.add("player", "bevel");
 
@@ -167,7 +167,7 @@ function createPlayerElement(player: Player, evaluation: GuessEvaluation) {
   return playerDiv;
 }
 
-function createValueElement() {
+function createValueElement(): HTMLDivElement {
   const mainDiv = document.createElement("div");
   mainDiv.classList.add("player-info-elem");
 
@@ -183,7 +183,7 @@ function createValueElement() {
   return mainDiv;
 }
 
-function createValueItem(content: string) {
+function createValueItem(content: string): HTMLDivElement {
   const item = document.createElement("div");
   item.classList.add("player-info-value-item");
   item.innerHTML = content;
@@ -200,7 +200,7 @@ function getChevron(num: number): string {
   }
 }
 
-function createAgeElement(player: Player, evaluation: GuessEvaluation) {
+function createAgeElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Age:";
   const values = elem.children[1]
@@ -214,7 +214,7 @@ function createAgeElement(player: Player, evaluation: GuessEvaluation) {
 }
 
 
-function createStartYearElement(player: Player, evaluation: GuessEvaluation) {
+function createStartYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Playing since:";
   const values = elem.children[1]
@@ -227,7 +227,7 @@ function createStartYearElement(player: Player, evaluation: GuessEvaluation) {
   return elem;
 }
 
-function createEndYearElement(player: Player, evaluation: GuessEvaluation) {
+function createEndYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Played til:";
   const values = elem.children[1]
@@ -245,7 +245,7 @@ function createEndYearElement(player: Player, evaluation: GuessEvaluation) {
   return elem;
 }
 
-function createCountriesElement(player: Player, evaluation: GuessEvaluation) {
+function createCountriesElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Countries:";
   const values = elem.children[1]
@@ -260,7 +260,7 @@ function createCountriesElement(player: Player, evaluation: GuessEvaluation) {
 }
 
 
-function create1v1sElement(player: Player, evaluation: GuessEvaluation) {
+function create1v1sElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "1v1s played:";
   const values = elem.children[1]
@@ -273,7 +273,7 @@ function create1v1sElement(player: Player, evaluation: GuessEvaluation) {
   return elem;
 }
 
-function createTgsElement(player: Player, evaluation: GuessEvaluation) {
+function createTgsElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "TGs played:";
   const values = elem.children[1]
@@ -285,7 +285,7 @@ function createTgsElement(player: Player, evaluation: GuessEvaluation) {
   );
   return elem;
 }
-function createEarningsElement(player: Player, evaluation: GuessEvaluation) {
+function createEarningsElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Earnings:";
   const values = elem.children[1]
@@ -298,7 +298,7 @@ function createEarningsElement(player: Player, evaluation: GuessEvaluation) {
   return elem;
 }
 
-function createTeamsElement(player: Player, evaluation: GuessEvaluation) {
+function createTeamsElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
   elem.children[0].innerHTML = "Teams:";
   const values = elem.children[1]
