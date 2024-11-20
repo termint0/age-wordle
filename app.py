@@ -13,6 +13,7 @@ COUNTRY_CODE_FILE = "./country_codes.json"
 with open(COUNTRY_CODE_FILE) as f:
     country_codes: dict[str, str] = json.load(f)
 
+
 def get_age(born_str: str) -> int:
     born = datetime.datetime.strptime(born_str, "%m/%d/%y")
     diff: datetime.timedelta = datetime.datetime.today() - born
@@ -40,6 +41,10 @@ curr_series: pd.Series = player_df.iloc[2]
 curr: dict[str, Any] = json.loads(curr_series.to_json())
 
 game_hash = hash(curr.values())
+
+
+def list_intersect(goal_val: list, guess_val: list) -> list:
+    return [x if x in guess_val else None for x in goal_val]
 
 
 def get_player_intersection(goal: dict, guess: dict) -> dict:
@@ -84,10 +89,18 @@ def guess_evaluation(goal: dict, guess: dict) -> dict:
     return result
 
 
-def list_intersect(goal_val: list, guess_val: list) -> list:
-    return [x if x in guess_val else None for x in goal_val]
+def get_goal_player_lengths(goal: dict) -> dict[str, int | list[int]]:
+    result: dict[str, Any] = {}
+    for key in goal.keys():
+        goal_val = goal[key]
+        if key in ["country", "teams"]:
+            result[key] = [len(str(a)) for a in goal_val]
+        else:
+            result[key] = len(str(goal_val))
+    return result
 
-def guess(name :str) -> dict | None:
+
+def guess(name: str) -> dict | None:
     name = name.lower()
     if name not in player_df.index:
         return None
@@ -102,11 +115,21 @@ def guess(name :str) -> dict | None:
     }
     return response
 
+
 @app.route(
     "/",
 )
 def index():
     return flask.render_template("index.html")
+
+@app.route(
+    "/api/goal-player-info"
+)
+def get_goal_player_info():
+    player_info = get_goal_player_lengths(curr) 
+    return flask.jsonify(player_info)
+    
+
 
 @app.route(
     "/api/hash",
@@ -117,14 +140,16 @@ def getHash():
 
 
 @app.route(
-    "/api/game/<name>",
+    "/api/guess/<name>",
     # methods=["POST"],
 )
 def game(name: str):
     response = guess(name)
+    print(response)
     if response is None:
         return flask.jsonify("Player not found", 404)
     return flask.jsonify(response)
+
 
 @app.route(
     "/api/multiguess",

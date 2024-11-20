@@ -1,5 +1,4 @@
-const RES_DIR = "/static/res/";
-
+const RES_DIR = "/static/res/" as const;
 function onThemeSwitch(): void {
   const oldTheme = localStorage.getItem("theme") || "light";
   const newTheme = oldTheme === "dark" ? "light" : "dark";

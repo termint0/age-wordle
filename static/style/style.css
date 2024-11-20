@@ -1,5 +1,5 @@
 * {
-  font-family: 'Atkinson Hyperlegible';
+  font-family: 'Roboto';
   transition: background-color 200ms ease;
   font-size: inherit;
 }
@@ -144,10 +144,36 @@ body {
   background-color: green;
 }
 
+
+.obfuscated {
+  background-color: grey;
+}
+
+.obfuscated::before {
+  content: "-";
+  color: transparent;
+}
+
+.goal-player .correct {
+  background-color: green;
+}
+
+.goal-player .wrong {
+  background-color: grey;
+}
+
 .correct {
   background-color: green;
 }
 
 .wrong {
   background-color: red;
+}
+
+.chevron-down::after{
+  content: "  \25B2";
+}
+
+.chevron-up:after{
+  content: "  \25BC";
 }
