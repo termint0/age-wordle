@@ -65,7 +65,8 @@ body {
 .bevel {
   border-radius: 14px;
 }
-.round{
+
+.round {
   border-radius: 54px;
 }
 
@@ -79,7 +80,6 @@ body {
   align-items: right;
   flex-wrap: wrap;
   justify-content: flex-end;
-  background-color: var(--col-1);
   z-index: 10;
 }
 
@@ -126,7 +126,6 @@ body {
 .player-input {
   max-width: 400px;
   padding: 10px 20px;
-  border-radius: 20px;
   border-style: solid;
   border-color: var(--col-text-2);
   text-align: center;

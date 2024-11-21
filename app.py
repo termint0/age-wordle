@@ -122,13 +122,11 @@ def guess(name: str) -> dict | None:
 def index():
     return flask.render_template("index.html")
 
-@app.route(
-    "/api/goal-player-info"
-)
+
+@app.route("/api/goal-player-info")
 def get_goal_player_info():
-    player_info = get_goal_player_lengths(curr) 
+    player_info = get_goal_player_lengths(curr)
     return flask.jsonify(player_info)
-    
 
 
 @app.route(
@@ -147,7 +145,7 @@ def game(name: str):
     response = guess(name)
     print(response)
     if response is None:
-        return flask.jsonify("Player not found", 404)
+        return flask.jsonify(error="Player not found"), 404
     return flask.jsonify(response)
 
 
