@@ -20,7 +20,16 @@ const MULTI_ITEM_VALUES = {
     "country": "goal-country",
     "teams": "goal-teams"
 };
-const CHAR_WIDTH = 8.4;
+function getCharWidth() {
+    const tgPlayed = document.getElementById("goal-played-tg");
+    if (tgPlayed === null) {
+        return 10;
+    }
+    const desc = tgPlayed.previousSibling;
+    return desc.offsetWidth / desc.innerText.length;
+}
+const CHAR_WIDTH = getCharWidth();
+const CHAR_WIDTH_LARGE = CHAR_WIDTH * 1.3;
 function getInfo() {
     return __awaiter(this, void 0, void 0, function* () {
         const resp = yield fetch("/api/goal-player-info");
@@ -41,6 +50,10 @@ function populateGoalPlayer() {
         const player = yield getInfo();
         for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
             const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+            if (key === "name") {
+                valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
+                continue;
+            }
             const item = createObfuscatedItem();
             item.style.width = (player[key] * CHAR_WIDTH).toString() + "px";
             valueDiv === null || valueDiv === void 0 ? void 0 : valueDiv.append(item);
@@ -62,13 +75,18 @@ function changeGoalPlayer(serverResponse) {
             continue;
         }
         const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+        if (key === "name") {
+            valueDiv.innerText = player[key].toString();
+            valueDiv.classList.remove("obfuscated");
+            continue;
+        }
         const item = valueDiv.children[0];
         item.innerText = player[key].toString();
         if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
             item.innerText = "present";
         }
         item.classList.remove("obfuscated");
-        item.classList.add("right");
+        item.classList.add("correct");
         item.style.width = "";
     }
     for (const key of Object.keys(MULTI_ITEM_VALUES)) {
@@ -80,7 +98,7 @@ function changeGoalPlayer(serverResponse) {
             const item = valueDiv.children[i];
             item.innerText = player[key][i].toString();
             item.classList.remove("obfuscated");
-            item.classList.add("right");
+            item.classList.add("correct");
             item.style.width = "";
         }
     }

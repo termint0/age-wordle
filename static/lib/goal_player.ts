@@ -13,7 +13,17 @@ const MULTI_ITEM_VALUES = {
   "teams": "goal-teams"
 } as const;
 
-const CHAR_WIDTH = 8.4 as const;
+function getCharWidth() {
+  const tgPlayed = document.getElementById("goal-played-tg");
+  if (tgPlayed === null) {
+    return 10;
+  }
+  const desc = tgPlayed.previousSibling as HTMLDivElement;
+  return desc.offsetWidth / desc.innerText.length
+}
+
+const CHAR_WIDTH = getCharWidth();
+const CHAR_WIDTH_LARGE = CHAR_WIDTH * 1.3;
 
 async function getInfo(): Promise<GoalPlayerLengths> {
   const resp = await fetch("/api/goal-player-info");
@@ -34,6 +44,10 @@ async function populateGoalPlayer(): Promise<void> {
   const player = await getInfo();
   for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
     const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key])
+    if (key === "name") {
+      valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
+      continue;
+    }
     const item = createObfuscatedItem();
     item.style.width = (player[key] * CHAR_WIDTH).toString() + "px";
     valueDiv?.append(item);
@@ -56,13 +70,19 @@ function changeGoalPlayer(serverResponse: ServerResp): void {
       continue;
     }
     const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+    if (key === "name") {
+      valueDiv.innerText = player[key].toString();
+      valueDiv.classList.remove("obfuscated");
+      valueDiv.style.width = "";
+      continue;
+    }
     const item = valueDiv.children[0] as HTMLDivElement;
     item.innerText = player[key].toString();
     if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
       item.innerText = "present"
     }
     item.classList.remove("obfuscated");
-    item.classList.add("right");
+    item.classList.add("correct");
     item.style.width = "";
   }
   for (const key of Object.keys(MULTI_ITEM_VALUES)) {
@@ -74,7 +94,7 @@ function changeGoalPlayer(serverResponse: ServerResp): void {
       const item = valueDiv.children[i] as HTMLDivElement;
       item.innerText = player[key][i].toString();
       item.classList.remove("obfuscated");
-      item.classList.add("right");
+      item.classList.add("correct");
       item.style.width = "";
     }
   }

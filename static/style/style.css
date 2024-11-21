@@ -5,15 +5,15 @@
 }
 
 .font-size-medium .font-large {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 
 .font-size-medium .font-medium {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .font-size-medium .font-small {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 
 .bold {
@@ -26,16 +26,21 @@ body {
   color: var(--col-text);
   display: flex;
   flex-direction: column;
+  --col-red: #
 }
 
 .theme-light {
   --col-header: #dedede;
   --col-text: #2b2b2b;
+  --col-text-2: #464646;
 
-  --col-1: #ffffff;
-  --col-2: #f0f0f0;
+  --col-1: #d3e1e6;
+  --col-2: #c0d2d9;
   --col-3: #dfdfdf;
-  --col-4: #d1d1d1;
+  --col-4: #b6cad2;
+
+  --col-wrong: #f58484;
+  --col-correct: #84d984;
 
   --col-resolved: #cdcdcd;
   --svg-filter: invert(0%) sepia(27%) saturate(1823%) hue-rotate(343deg) brightness(107%) contrast(78%);
@@ -44,17 +49,24 @@ body {
 .theme-dark {
   --col-header: #1a191c;
   --col-text: #d8d8d8;
+  --col-text-2: #898989;
 
-  --col-1: #242326;
-  --col-2: #2e2d31;
+  --col-1: #152126;
+  --col-2: #1B262D;
   --col-3: #38373b;
-  --col-4: #49484c;
+  --col-4: #1B2B33;
+
+  --col-correct: #0d450d;
+  --col-wrong: #501e1e;
 
   --svg-filter: invert(96%) sepia(0%) saturate(0%) hue-rotate(191deg) brightness(91%) contrast(94%)
 }
 
 .bevel {
-  border-radius: 7px;
+  border-radius: 14px;
+}
+.round{
+  border-radius: 54px;
 }
 
 .click {
@@ -93,11 +105,22 @@ body {
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 10px 20px;
+  gap: 35px;
+  margin: 15px 50px;
 }
 
-.input-container {
-  margin: 10px;
+.input-container {}
+
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.guessed-players {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .player-input {
@@ -105,6 +128,7 @@ body {
   padding: 10px 20px;
   border-radius: 20px;
   border-style: solid;
+  border-color: var(--col-text-2);
   text-align: center;
 
   background-color: var(--col-4);
@@ -115,33 +139,42 @@ body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 10px;
-  margin: 10px;
 
-  background-color: var(--col-4);
+  padding: 25px;
+  /*margin: 10px;*/
+  max-width: 1200px;
+  gap: 15px;
+
+  background-color: var(--col-2);
 }
 
 .player-info {
   display: flex;
-  gap: 5px 20px;
+  gap: 14px 30px;
   flex-wrap: wrap;
 }
 
 .player-info-elem {
   display: flex;
+  gap: 6px;
   flex-direction: column;
+}
+
+.player-info-description {
+  color: var(--col-text-2)
 }
 
 .player-info-value {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .player-info-value-item {
   padding: 3px 12px;
   border-radius: 15px;
-  background-color: green;
+  /*background-color: green;*/
 }
 
 
@@ -154,26 +187,18 @@ body {
   color: transparent;
 }
 
-.goal-player .correct {
-  background-color: green;
-}
-
-.goal-player .wrong {
-  background-color: grey;
-}
-
 .correct {
-  background-color: green;
+  background-color: var(--col-correct);
 }
 
 .wrong {
-  background-color: red;
+  background-color: var(--col-wrong);
 }
 
-.chevron-down::after{
+.chevron-down::after {
   content: "  \25B2";
 }
 
-.chevron-up:after{
+.chevron-up:after {
   content: "  \25BC";
 }
