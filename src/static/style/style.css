@@ -77,6 +77,14 @@ body {
   transition: translate 70ms ease-out;
 }
 
+.hidden {
+  display: none;
+}
+
+.center {
+  text-align: center;
+}
+
 .header {
   display: flex;
   align-items: right;
@@ -155,6 +163,9 @@ body {
   gap: 14px 30px;
   flex-wrap: wrap;
 }
+.player-info-elem-group {
+  display: flex;
+}
 
 .player-info-elem {
   display: flex;
@@ -203,4 +214,12 @@ body {
 
 .chevron-up:after {
   content: "  \25BC";
+}
+
+.congrats-div {
+  display: flex;
+  gap: 10px;
+  flex-flow: column;
+  padding: 20px;
+  background-color: var(--col-background);
 }

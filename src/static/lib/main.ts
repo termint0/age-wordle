@@ -1,3 +1,8 @@
+async function incrementGuesses() {
+  const guessCount = localStorage.getItem("guessCount") || "0";
+  const newCount = Number(guessCount) + 1;
+  localStorage.setItem("guessCount", newCount.toString());
+}
 async function getGameHash(): Promise<number> {
   const resp = await fetch("/api/hash");
   if (resp.status !== 200) {
@@ -69,11 +74,12 @@ async function onPlayerInput(): Promise<void> {
 }
 
 async function guessPlayer(name: string): Promise<boolean> {
-
+  incrementGuesses();
   const resp = await fetch("/api/guess/" + name);
   if (resp.status !== 200) {
     return false;
   }
+
   const serverResponse = await resp.json() as ServerResp;
 
   const currGameHash = Number(localStorage.getItem("hash"));
@@ -93,5 +99,15 @@ async function guessPlayer(name: string): Promise<boolean> {
 
 
 function onCorrectGuess(serverResponse: ServerResp): void {
+  const input = document.getElementById("player-input");
+  const congratsElem = document.getElementById("congrats-div");
+  const guessCount = document.getElementById("guess-count");
+  if (input === null || congratsElem === null || guessCount === null) {
+    throw new Error("Input area's HTML element names changes aren't reflected in JS!");
+  }
+
+  guessCount.innerText = localStorage.getItem("guessCount") || "idk how many (error happened)";
+  input.classList.add("hidden");
+  congratsElem.classList.remove("hidden");
 }
 

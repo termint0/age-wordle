@@ -7,6 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function incrementGuesses() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const guessCount = localStorage.getItem("guessCount") || "0";
+        const newCount = Number(guessCount) + 1;
+        localStorage.setItem("guessCount", newCount.toString());
+    });
+}
 function getGameHash() {
     return __awaiter(this, void 0, void 0, function* () {
         const resp = yield fetch("/api/hash");
@@ -76,6 +83,7 @@ function onPlayerInput() {
 }
 function guessPlayer(name) {
     return __awaiter(this, void 0, void 0, function* () {
+        incrementGuesses();
         const resp = yield fetch("/api/guess/" + name);
         if (resp.status !== 200) {
             return false;
@@ -96,4 +104,13 @@ function guessPlayer(name) {
     });
 }
 function onCorrectGuess(serverResponse) {
+    const input = document.getElementById("player-input");
+    const congratsElem = document.getElementById("congrats-div");
+    const guessCount = document.getElementById("guess-count");
+    if (input === null || congratsElem === null || guessCount === null) {
+        throw new Error("Input area's HTML element names changes aren't reflected in JS!");
+    }
+    guessCount.innerText = localStorage.getItem("guessCount") || "idk how many (error happened)";
+    input.classList.add("hidden");
+    congratsElem.classList.remove("hidden");
 }

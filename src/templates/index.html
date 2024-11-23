@@ -42,6 +42,14 @@
     <div class="input-container">
       <input id="player-input" name="" placeholder="Input player" class="round player-input font-large"
         onchange="onPlayerInput()">
+      <div id="congrats-div" class="congrats-div">
+        <div class="bold font-large center">
+          Congratulations
+        </div>
+        <div class="center">
+          You guessed the player in <span id="guess-count"></span> tries!
+        </div>
+      </div>
     </div>
     <div class="players">
 
@@ -49,37 +57,45 @@
         <div id="goal-name" class="name font-large bold obfuscated round">
         </div>
         <div class="player-info">
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Age:</div>
-            <div id="goal-age" class="player-info-value"> </div>
+          <div class="player-info-elem-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Age:</div>
+              <div id="goal-age" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Countries: </div>
+              <div id="goal-country" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Earnings: </div>
+              <div id="goal-earnings" class="player-info-value"> </div>
+            </div>
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Active since:</div>
-            <div id="goal-start-year" class="player-info-value"> </div>
+          <div class="player-info-elem-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Active since:</div>
+              <div id="goal-start-year" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Active til:</div>
+              <div id="goal-end-year" class="player-info-value"> </div>
+            </div>
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Active til:</div>
-            <div id="goal-end-year" class="player-info-value"> </div>
+          <div class="player-info-elem-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> 1v1s played: </div>
+              <div id="goal-played-1v1" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> TGs played: </div>
+              <div id="goal-played-tg" class="player-info-value"> </div>
+            </div>
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Countries: </div>
-            <div id="goal-country" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> 1v1s played: </div>
-            <div id="goal-played-1v1" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> TGs played: </div>
-            <div id="goal-played-tg" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Earnings: </div>
-            <div id="goal-earnings" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Teams: </div>
-            <div id="goal-teams" class="player-info-value"> </div>
+          <div class="player-info-elem-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Teams: </div>
+              <div id="goal-teams" class="player-info-value"> </div>
+            </div>
           </div>
         </div>
         <script>
