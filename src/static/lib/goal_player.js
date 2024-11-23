@@ -78,10 +78,11 @@ function changeGoalPlayer(serverResponse) {
         if (key === "name") {
             valueDiv.innerText = player[key].toString();
             valueDiv.classList.remove("obfuscated");
+            valueDiv.style.width = "";
             continue;
         }
         const item = valueDiv.children[0];
-        item.innerText = player[key].toString();
+        item.innerText = valFromInt(player[key]);
         if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
             item.innerText = "present";
         }

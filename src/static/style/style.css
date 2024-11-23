@@ -1,5 +1,5 @@
 * {
-  font-family: 'Roboto';
+  font-family: 'Roboto, serif';
   transition: background-color 200ms ease;
   font-size: inherit;
 }
@@ -22,11 +22,13 @@
 
 body {
   margin: 0;
-  background-color: var(--col-1);
+  background-color: var(--col-background);
   color: var(--col-text);
   display: flex;
   flex-direction: column;
-  --col-red: #
+
+
+  background-image: url("/static/res/bg_bluer.jpg");
 }
 
 .theme-light {
@@ -34,7 +36,7 @@ body {
   --col-text: #2b2b2b;
   --col-text-2: #464646;
 
-  --col-1: #d3e1e6;
+  --col-background: #d3e1e6;
   --col-2: #c0d2d9;
   --col-3: #dfdfdf;
   --col-4: #b6cad2;
@@ -51,7 +53,7 @@ body {
   --col-text: #d8d8d8;
   --col-text-2: #898989;
 
-  --col-1: #152126;
+  --col-background: #152126;
   --col-2: #1B262D;
   --col-3: #38373b;
   --col-4: #1B2B33;
@@ -63,7 +65,7 @@ body {
 }
 
 .bevel {
-  border-radius: 14px;
+  /*border-radius: 14px;*/
 }
 
 .round {
@@ -85,20 +87,21 @@ body {
 
 .header-button {
   display: flex;
-  padding: 10px;
+  margin: 10px;
+  padding: 0px;
   justify-content: center;
-  border: none;
-  background: none;
+  background-color: var(--col-background);
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--col-text-2);
 }
 
 .icon {
   filter: var(--svg-filter);
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   padding: 5px;
   border-radius: 50px;
-  border-style: solid;
-  border-width: 1px;
 }
 
 .game {

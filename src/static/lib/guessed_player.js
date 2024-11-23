@@ -38,7 +38,7 @@ function createAgeElement(player, evaluation) {
     const elem = createValueElement();
     elem.children[0].innerHTML = "Age:";
     const values = elem.children[1];
-    const content = player.age.toString();
+    const content = valFromInt(player.age);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.age));
     values.append(item);
@@ -48,7 +48,7 @@ function createStartYearElement(player, evaluation) {
     const elem = createValueElement();
     elem.children[0].innerHTML = "Playing since:";
     const values = elem.children[1];
-    const content = player.start_year.toString();
+    const content = valFromInt(player.start_year);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.start_year));
     values.append(item);
@@ -87,7 +87,7 @@ function create1v1sElement(player, evaluation) {
     const elem = createValueElement();
     elem.children[0].innerHTML = "1v1s played:";
     const values = elem.children[1];
-    const content = player.played_1v1.toString();
+    const content = valFromInt(player.played_1v1);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.played_1v1));
     values.append(item);
@@ -97,7 +97,7 @@ function createTgsElement(player, evaluation) {
     const elem = createValueElement();
     elem.children[0].innerHTML = "TGs played:";
     const values = elem.children[1];
-    const content = player.played_tg.toString();
+    const content = valFromInt(player.played_tg);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.played_tg));
     values.append(item);
@@ -107,7 +107,7 @@ function createEarningsElement(player, evaluation) {
     const elem = createValueElement();
     elem.children[0].innerHTML = "Earnings:";
     const values = elem.children[1];
-    const content = player.earnings.toString();
+    const content = valFromInt(player.earnings);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.earnings));
     values.append(item);

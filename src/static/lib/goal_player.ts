@@ -77,7 +77,7 @@ function changeGoalPlayer(serverResponse: ServerResp): void {
       continue;
     }
     const item = valueDiv.children[0] as HTMLDivElement;
-    item.innerText = player[key].toString();
+    item.innerText = valFromInt(player[key]);
     if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
       item.innerText = "present"
     }

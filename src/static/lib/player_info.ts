@@ -45,6 +45,7 @@ interface ServerResp {
 //const CHEVRON_UP = "&#x25B2;" as const;
 //const CHEVRON_DOWN = "&#x25BC;" as const;
 const END_YEAR_PRESENT_VAL = 100000 as const;
+const NOT_KNOWN_VAL = -1 as const;
 
 function createValueElement(): HTMLDivElement {
   const mainDiv = document.createElement("div");
@@ -69,3 +70,10 @@ function createValueItem(content: string): HTMLDivElement {
   return item;
 }
 
+function valFromInt(val: number): string {
+  if (val === NOT_KNOWN_VAL) {
+    return "unknown";
+  } else {
+    return val.toString();
+  }
+}
