@@ -15,6 +15,7 @@ async function getGameHash(): Promise<number> {
 async function makeInitialGuess(names: string): Promise<ServerResp[]> {
   if (!names) {
     return [];
+
   }
   const resp = await fetch("/api/multiguess?names=" + names);
   if (resp.status !== 200) {
@@ -31,6 +32,11 @@ async function loadFromLocalStorage(): Promise<void> {
     return;
   }
 
+  const givenUp = localStorage.getItem("state") === "givenUp"
+  if (givenUp) {
+    giveUp();
+  }
+
   const playersStr: string = localStorage.getItem("guesses") || ""
   const players = await makeInitialGuess(playersStr);
 
@@ -42,9 +48,9 @@ async function loadFromLocalStorage(): Promise<void> {
     playersDiv.prepend(
       createPlayerElement(resp.guessedPlayer, resp.guessEval)
     )
-    changeGoalPlayer(resp);
-    if (resp.correct) {
-      onCorrectGuess(resp);
+    changeGoalPlayer(resp.goalPlayer);
+    if (!givenUp && resp.correct) {
+      onCorrectGuess();
     }
   }
 
@@ -52,6 +58,7 @@ async function loadFromLocalStorage(): Promise<void> {
 
 function onGameReset(): void {
   localStorage.removeItem("hash");
+  localStorage.removeItem("guessCount");
   localStorage.removeItem("guesses");
 
   const playersDiv = document.getElementById("guessed-players");
@@ -90,24 +97,46 @@ async function guessPlayer(name: string): Promise<boolean> {
   localStorage.setItem("hash", serverResponse.hash.toString());
 
   addGuessedPlayer(serverResponse);
-  changeGoalPlayer(serverResponse);
+  changeGoalPlayer(serverResponse.goalPlayer);
   if (serverResponse.correct) {
-    onCorrectGuess(serverResponse);
+    onCorrectGuess();
     return true;
   }
 }
 
 
-function onCorrectGuess(serverResponse: ServerResp): void {
-  const input = document.getElementById("player-input");
+function onCorrectGuess(): void {
+  const input = document.getElementById("input-container");
   const congratsElem = document.getElementById("congrats-div");
-  const guessCount = document.getElementById("guess-count");
-  if (input === null || congratsElem === null || guessCount === null) {
+  const guessCountElem = document.getElementById("guess-count");
+  if (input === null || congratsElem === null || guessCountElem === null) {
     throw new Error("Input area's HTML element names changes aren't reflected in JS!");
   }
 
-  guessCount.innerText = localStorage.getItem("guessCount") || "idk how many (error happened)";
+  const guessCount = localStorage.getItem("guessCount") || "idk how many (error happened)";
+  if (guessCount === "1") {
+    guessCountElem.innerText = "1 try"
+  } else {
+    guessCountElem.innerText = guessCount + " tries"
+  }
   input.classList.add("hidden");
   congratsElem.classList.remove("hidden");
 }
 
+async function giveUp(): Promise<void> {
+  localStorage.setItem("state", "givenUp");
+  const resp = await fetch("/api/give-up");
+  if (resp.status !== 200) {
+    return;
+  }
+  const respJson = await resp.json() as Player;
+  changeGoalPlayer(respJson);
+
+  const input = document.getElementById("input-container");
+  const giveUpDiv = document.getElementById("give-up-div")
+  if (input === null || giveUpDiv == null) {
+    throw new Error("Input area's HTML element names changes aren't reflected in JS!");
+  }
+  input.classList.add("hidden");
+  giveUpDiv.classList.remove("hidden");
+}

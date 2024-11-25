@@ -197,10 +197,7 @@ def game(name: str):
     return flask.jsonify(response)
 
 
-@app.route(
-    "/api/multiguess",
-    # methods=["POST"],
-)
+@app.route("/api/multiguess")
 def multiguess():
     names = flask.request.args.get("names")
     if names is None:
@@ -210,6 +207,11 @@ def multiguess():
     response = [x for x in response if x]
 
     return flask.jsonify(response)
+
+
+@app.route("/api/give-up")
+def give_up():
+    return flask.jsonify(curr)
 
 
 if __name__ == "__main__":

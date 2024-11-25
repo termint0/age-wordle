@@ -63,8 +63,7 @@ async function populateGoalPlayer(): Promise<void> {
 }
 
 
-function changeGoalPlayer(serverResponse: ServerResp): void {
-  const player = serverResponse.goalPlayer;
+function changeGoalPlayer(player: Player): void {
   for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
     if (player[key] === null) {
       continue;
@@ -99,12 +98,3 @@ function changeGoalPlayer(serverResponse: ServerResp): void {
     }
   }
 }
-
-//<div id="goal-age" class="player-info-value"> </div>
-//<div id="goal-start-year" class="player-info-value"> </div>
-//<div id="goal-end-year" class="player-info-value"> </div>
-//<div id="goal-countries" class="player-info-value"> </div>
-//<div id="goal-played-1v1s" class="player-info-value"> </div>
-//<div id="goal-played-tgs" class="player-info-value"> </div>
-//<div id="goal-earnings" class="player-info-value"> </div>
-//<div id="goal-teams" class="player-info-value"> </div>

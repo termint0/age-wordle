@@ -13,7 +13,7 @@
 }
 
 .font-size-medium .font-small {
-  font-size: 1.2rem;
+  font-size: 0.8rem;
 }
 
 .bold {
@@ -28,10 +28,11 @@ body {
   flex-direction: column;
 
 
-  background-image: url("/static/res/bg_bluer.jpg");
 }
 
 .theme-light {
+  background-image: url("/static/res/bg_bluer.jpg");
+
   --col-header: #dedede;
   --col-text: #2b2b2b;
   --col-text-2: #464646;
@@ -46,6 +47,8 @@ body {
 }
 
 .theme-dark {
+  /*background-image: url("/static/res/bg_night_blur.jpg");*/
+  background-image: url("/static/res/bg_night_blur_darker.jpg");
   --col-header: #1a191c;
   --col-text: #d8d8d8;
   --col-text-2: #898989;
@@ -114,7 +117,34 @@ body {
   margin: 15px 50px;
 }
 
-.input-container {}
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.player-input {
+  max-width: 400px;
+  width: 100%;
+  padding: 10px 20px;
+  border-style: solid;
+  border-color: var(--col-text-2);
+  text-align: center;
+
+  background-color: var(--col-main);
+  color: var(--col-text);
+}
+
+.give-up-button {
+  padding: 3px 20px;
+  background-color: var(--col-main);
+  color: var(--col-text);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--col-text-2);
+}
+
 
 .players {
   display: flex;
@@ -128,16 +158,6 @@ body {
   gap: 20px;
 }
 
-.player-input {
-  max-width: 400px;
-  padding: 10px 20px;
-  border-style: solid;
-  border-color: var(--col-text-2);
-  text-align: center;
-
-  background-color: var(--col-main);
-  color: var(--col-text);
-}
 
 .player {
   display: flex;
@@ -146,7 +166,7 @@ body {
 
   padding: 25px;
   /*margin: 10px;*/
-  max-width: 1200px;
+  max-width: 1100px;
   gap: 15px;
 
   background-color: var(--col-main);
@@ -157,6 +177,7 @@ body {
   gap: 14px 30px;
   flex-wrap: wrap;
 }
+
 .player-info-elem-group {
   display: flex;
 }
