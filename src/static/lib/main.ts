@@ -39,7 +39,7 @@ async function loadFromLocalStorage(): Promise<void> {
     return
   }
   for (const resp of players) {
-    playersDiv.append(
+    playersDiv.prepend(
       createPlayerElement(resp.guessedPlayer, resp.guessEval)
     )
     changeGoalPlayer(resp);

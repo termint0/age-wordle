@@ -24,7 +24,7 @@ function addGuessedPlayer(serverResponse: ServerResp): void {
 
 function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const playerDiv = document.createElement("div");
-  playerDiv.classList.add("player", "bevel");
+  playerDiv.classList.add("player");
 
   const nameDiv = document.createElement("div");
   nameDiv.classList.add("name", "font-large", "bold");

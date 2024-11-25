@@ -51,7 +51,7 @@ function loadFromLocalStorage() {
             return;
         }
         for (const resp of players) {
-            playersDiv.append(createPlayerElement(resp.guessedPlayer, resp.guessEval));
+            playersDiv.prepend(createPlayerElement(resp.guessedPlayer, resp.guessEval));
             changeGoalPlayer(resp);
             if (resp.correct) {
                 onCorrectGuess(resp);
