@@ -248,6 +248,9 @@ function getGameHash() {
         return respJson["hash"] || -1;
     });
 }
+function onGameTimeout() {
+    popupInfo("The game timed out. A new player has been chosen", "close");
+}
 function makeInitialGuess(names) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!names) {
@@ -266,7 +269,6 @@ function loadFromLocalStorage() {
         const gameHash = yield getGameHash();
         if (gameHash.toString() !== localStorage.getItem("hash")) {
             onGameReset();
-            //return;
         }
         const givenUp = localStorage.getItem("state") === "givenUp";
         if (givenUp) {
@@ -320,6 +322,7 @@ function guessPlayer(name) {
         const serverResponse = yield resp.json();
         const currGameHash = Number(localStorage.getItem("hash"));
         if (currGameHash && serverResponse.hash !== currGameHash) {
+            onGameTimeout();
             onGameReset();
             return true;
         }
@@ -351,7 +354,7 @@ function onCorrectGuess() {
 }
 function onGiveUpClick() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (yield customConfirm("Do you really want to give up?")) {
+        if (yield customConfirm("Do you really want to give up?", "Give up", "Keep playing")) {
             giveUp();
         }
     });
@@ -374,7 +377,7 @@ function giveUp() {
         giveUpDiv.classList.remove("hidden");
     });
 }
-function customConfirm(prompt) {
+function customConfirm(prompt, yesButtonText, noButtonText) {
     return new Promise((resolve) => {
         // Get dialog and buttons by their IDs or classes
         const modal = document.getElementById('modal-prompt');
@@ -383,6 +386,8 @@ function customConfirm(prompt) {
         const noButton = document.getElementById('prompt-no');
         modal.classList.remove("hidden");
         promptDiv.innerText = prompt;
+        yesButton.innerText = yesButtonText;
+        noButton.innerText = noButtonText;
         // Attach event listeners to resolve the promise
         const handleYes = () => {
             resolve(true);
@@ -400,6 +405,28 @@ function customConfirm(prompt) {
         };
         yesButton.addEventListener('click', handleYes);
         noButton.addEventListener('click', handleNo);
+    });
+}
+function popupInfo(text, buttonText) {
+    return new Promise((resolve) => {
+        // Get dialog and buttons by their IDs or classes
+        const modal = document.getElementById('modal-info');
+        const infoDiv = document.getElementById('info-text');
+        const button = document.getElementById('info-close');
+        modal.classList.remove("hidden");
+        infoDiv.innerText = text;
+        button.innerText = buttonText;
+        // Attach event listeners to resolve the promise
+        const close = () => {
+            resolve(true);
+            cleanup();
+        };
+        // Cleanup function to hide dialog and remove event listeners
+        const cleanup = () => {
+            modal.classList.add("hidden");
+            button.removeEventListener('click', close);
+        };
+        button.addEventListener('click', close);
     });
 }
 ;

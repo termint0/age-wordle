@@ -3,6 +3,7 @@ async function incrementGuesses() {
   const newCount = Number(guessCount) + 1;
   localStorage.setItem("guessCount", newCount.toString());
 }
+
 async function getGameHash(): Promise<number> {
   const resp = await fetch("/api/hash");
   if (resp.status !== 200) {
@@ -10,6 +11,10 @@ async function getGameHash(): Promise<number> {
   }
   const respJson = await resp.json();
   return respJson["hash"] || -1;
+}
+
+function onGameTimeout() {
+  popupInfo("The game timed out. A new player has been chosen", "close");
 }
 
 async function makeInitialGuess(names: string): Promise<ServerResp[]> {
@@ -29,7 +34,6 @@ async function loadFromLocalStorage(): Promise<void> {
   const gameHash = await getGameHash();
   if (gameHash.toString() !== localStorage.getItem("hash")) {
     onGameReset();
-    //return;
   }
 
   const givenUp = localStorage.getItem("state") === "givenUp"
@@ -91,6 +95,7 @@ async function guessPlayer(name: string): Promise<boolean> {
 
   const currGameHash = Number(localStorage.getItem("hash"));
   if (currGameHash && serverResponse.hash !== currGameHash) {
+    onGameTimeout();
     onGameReset();
     return true;
   }
@@ -124,7 +129,7 @@ function onCorrectGuess(): void {
 }
 
 async function onGiveUpClick(): Promise<void> {
-  if (await customConfirm("Do you really want to give up?")) {
+  if (await customConfirm("Do you really want to give up?", "Give up", "Keep playing")) {
     giveUp()
   }
 }
@@ -147,7 +152,7 @@ async function giveUp(): Promise<void> {
   giveUpDiv.classList.remove("hidden");
 }
 
-function customConfirm(prompt: string): Promise<boolean> {
+function customConfirm(prompt: string, yesButtonText: string, noButtonText: string): Promise<boolean> {
   return new Promise((resolve) => {
     // Get dialog and buttons by their IDs or classes
     const modal = document.getElementById('modal-prompt') as HTMLElement;
@@ -157,6 +162,8 @@ function customConfirm(prompt: string): Promise<boolean> {
 
     modal.classList.remove("hidden");
     promptDiv.innerText = prompt;
+    yesButton.innerText = yesButtonText;
+    noButton.innerText = noButtonText;
 
 
     // Attach event listeners to resolve the promise
@@ -179,5 +186,33 @@ function customConfirm(prompt: string): Promise<boolean> {
 
     yesButton.addEventListener('click', handleYes);
     noButton.addEventListener('click', handleNo);
+  });
+}
+
+function popupInfo(text: string, buttonText: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    // Get dialog and buttons by their IDs or classes
+    const modal = document.getElementById('modal-info') as HTMLElement;
+    const infoDiv = document.getElementById('info-text') as HTMLDivElement;
+    const button = document.getElementById('info-close') as HTMLButtonElement;
+
+    modal.classList.remove("hidden");
+    infoDiv.innerText = text;
+    button.innerText = buttonText;
+
+
+    // Attach event listeners to resolve the promise
+    const close = () => {
+      resolve(true);
+      cleanup();
+    };
+
+    // Cleanup function to hide dialog and remove event listeners
+    const cleanup = () => {
+      modal.classList.add("hidden");
+      button.removeEventListener('click', close);
+    };
+
+    button.addEventListener('click', close);
   });
 }
