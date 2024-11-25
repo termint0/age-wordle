@@ -38,11 +38,25 @@
     <!--<img class="icon" src="../static/res/mode-light.svg" alt="Light theme">-->
     <!--</button>-->
   </div>
+  <div id="modal-prompt" class="hidden modal">
+    <div class="confirm-popup bevel">
+      <!--<div class="font-large bold">-->
+      <!--  Do you really want to give up?-->
+      <!--</div>-->
+      <div id="prompt-text" class="font-medium">
+        You won't have a chance to guess until tomorrow!
+      </div>
+      <div class="button-row">
+        <button id="prompt-no" class="prompt-button round click">Keep Trying</button>
+        <button id="prompt-yes" class="prompt-button round click">Give up</button>
+      </div>
+    </div>
+  </div>
   <div class="game">
     <div id="input-container" class="input-container">
       <input id="player-input" name="" placeholder="Input player" class="round player-input font-large"
         onchange="onPlayerInput()">
-      <button class="give-up-button bevel font-small" onclick="giveUp();">Give up</button>
+      <button class="give-up-button bevel font-small click" onclick="onGiveUpClick();">Give up</button>
     </div>
     <div id="congrats-div" class="hidden congrats-div bevel">
       <div class="bold font-large center">

@@ -266,7 +266,7 @@ function loadFromLocalStorage() {
         const gameHash = yield getGameHash();
         if (gameHash.toString() !== localStorage.getItem("hash")) {
             onGameReset();
-            return;
+            //return;
         }
         const givenUp = localStorage.getItem("state") === "givenUp";
         if (givenUp) {
@@ -328,8 +328,8 @@ function guessPlayer(name) {
         changeGoalPlayer(serverResponse.goalPlayer);
         if (serverResponse.correct) {
             onCorrectGuess();
-            return true;
         }
+        return true;
     });
 }
 function onCorrectGuess() {
@@ -349,6 +349,13 @@ function onCorrectGuess() {
     input.classList.add("hidden");
     congratsElem.classList.remove("hidden");
 }
+function onGiveUpClick() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (yield customConfirm("Do you really want to give up?")) {
+            giveUp();
+        }
+    });
+}
 function giveUp() {
     return __awaiter(this, void 0, void 0, function* () {
         localStorage.setItem("state", "givenUp");
@@ -365,6 +372,34 @@ function giveUp() {
         }
         input.classList.add("hidden");
         giveUpDiv.classList.remove("hidden");
+    });
+}
+function customConfirm(prompt) {
+    return new Promise((resolve) => {
+        // Get dialog and buttons by their IDs or classes
+        const modal = document.getElementById('modal-prompt');
+        const promptDiv = document.getElementById('prompt-text');
+        const yesButton = document.getElementById('prompt-yes');
+        const noButton = document.getElementById('prompt-no');
+        modal.classList.remove("hidden");
+        promptDiv.innerText = prompt;
+        // Attach event listeners to resolve the promise
+        const handleYes = () => {
+            resolve(true);
+            cleanup();
+        };
+        const handleNo = () => {
+            resolve(false);
+            cleanup();
+        };
+        // Cleanup function to hide dialog and remove event listeners
+        const cleanup = () => {
+            modal.classList.add("hidden");
+            yesButton.removeEventListener('click', handleYes);
+            noButton.removeEventListener('click', handleNo);
+        };
+        yesButton.addEventListener('click', handleYes);
+        noButton.addEventListener('click', handleNo);
     });
 }
 ;

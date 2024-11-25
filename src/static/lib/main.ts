@@ -29,7 +29,7 @@ async function loadFromLocalStorage(): Promise<void> {
   const gameHash = await getGameHash();
   if (gameHash.toString() !== localStorage.getItem("hash")) {
     onGameReset();
-    return;
+    //return;
   }
 
   const givenUp = localStorage.getItem("state") === "givenUp"
@@ -100,8 +100,8 @@ async function guessPlayer(name: string): Promise<boolean> {
   changeGoalPlayer(serverResponse.goalPlayer);
   if (serverResponse.correct) {
     onCorrectGuess();
-    return true;
   }
+  return true;
 }
 
 
@@ -123,6 +123,12 @@ function onCorrectGuess(): void {
   congratsElem.classList.remove("hidden");
 }
 
+async function onGiveUpClick(): Promise<void> {
+  if (await customConfirm("Do you really want to give up?")) {
+    giveUp()
+  }
+}
+
 async function giveUp(): Promise<void> {
   localStorage.setItem("state", "givenUp");
   const resp = await fetch("/api/give-up");
@@ -139,4 +145,39 @@ async function giveUp(): Promise<void> {
   }
   input.classList.add("hidden");
   giveUpDiv.classList.remove("hidden");
+}
+
+function customConfirm(prompt: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    // Get dialog and buttons by their IDs or classes
+    const modal = document.getElementById('modal-prompt') as HTMLElement;
+    const promptDiv = document.getElementById('prompt-text') as HTMLDivElement;
+    const yesButton = document.getElementById('prompt-yes') as HTMLButtonElement;
+    const noButton = document.getElementById('prompt-no') as HTMLButtonElement;
+
+    modal.classList.remove("hidden");
+    promptDiv.innerText = prompt;
+
+
+    // Attach event listeners to resolve the promise
+    const handleYes = () => {
+      resolve(true);
+      cleanup();
+    };
+
+    const handleNo = () => {
+      resolve(false);
+      cleanup();
+    };
+
+    // Cleanup function to hide dialog and remove event listeners
+    const cleanup = () => {
+      modal.classList.add("hidden");
+      yesButton.removeEventListener('click', handleYes);
+      noButton.removeEventListener('click', handleNo);
+    };
+
+    yesButton.addEventListener('click', handleYes);
+    noButton.addEventListener('click', handleNo);
+  });
 }
