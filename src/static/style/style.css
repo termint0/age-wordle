@@ -22,6 +22,7 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
   background-color: var(--col-main);
   color: var(--col-text);
   display: flex;
@@ -272,4 +273,14 @@ body {
   flex-flow: column;
   padding: 40px;
   background-color: var(--col-main);
+}
+
+footer {
+  color: var(--col-text);
+  margin-top: auto;
+  text-align: center;
+}
+
+footer a {
+  color: var(--col-text)
 }

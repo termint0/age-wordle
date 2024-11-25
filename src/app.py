@@ -163,11 +163,13 @@ def guess(name: str) -> dict | None:
     return response
 
 
-@app.route(
-    "/",
-)
+@app.route("/")
 def index():
     return flask.render_template("index.html")
+
+@app.route("/about")
+def about():
+    return flask.render_template("about.html")
 
 
 @app.route("/api/goal-player-info")
