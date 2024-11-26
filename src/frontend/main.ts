@@ -62,6 +62,7 @@ async function loadFromLocalStorage(): Promise<void> {
 
 function onGameReset(): void {
   localStorage.removeItem("hash");
+  localStorage.removeItem("state");
   localStorage.removeItem("guessCount");
   localStorage.removeItem("guesses");
 

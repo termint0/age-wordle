@@ -3,7 +3,7 @@
         //"module": "commonjs",
         "target": "ES6",
         "noImplicitAny": false,
-        //"paths": "./static/lib/",
+        //"paths": "src/frontend/",
         //"outDir": "src/static/lib/"
         "outFile": "src/static/lib/main.js"
     },

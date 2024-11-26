@@ -291,6 +291,7 @@ function loadFromLocalStorage() {
 }
 function onGameReset() {
     localStorage.removeItem("hash");
+    localStorage.removeItem("state");
     localStorage.removeItem("guessCount");
     localStorage.removeItem("guesses");
     const playersDiv = document.getElementById("guessed-players");
