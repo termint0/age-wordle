@@ -163,14 +163,6 @@ def guess(name: str) -> dict | None:
     return response
 
 
-@app.route("/")
-def index():
-    return flask.render_template("index.html")
-
-@app.route("/about")
-def about():
-    return flask.render_template("about.html")
-
 
 @app.route("/api/goal-player-info")
 def get_goal_player_info():
@@ -217,6 +209,14 @@ def give_up():
 
 
 if __name__ == "__main__":
+    @app.route("/")
+    def index():
+        return flask.render_template("index.html")
+
+    @app.route("/about")
+    def about():
+        return flask.render_template("about.html")
+
     app.run(host="0.0.0.0", port=8080, debug=True)
 
 # print(get_guess_info("TheViper"))
