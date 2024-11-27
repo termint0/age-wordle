@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: gunicorn/Dockerfile
-    ports:
-      - "5000:5000"
+    # ports:
+    #   - "5000:5000"
 
   nginx:
     build:
