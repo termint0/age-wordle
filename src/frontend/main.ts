@@ -71,6 +71,7 @@ function onGameReset(): void {
     return
   }
   playersDiv.innerText = '';
+  populateGoalPlayer();
 }
 
 async function onPlayerInput(): Promise<void> {
@@ -98,10 +99,11 @@ async function guessPlayer(name: string): Promise<boolean> {
   if (currGameHash && serverResponse.hash !== currGameHash) {
     onGameTimeout();
     onGameReset();
+    localStorage.setItem("hash", serverResponse.hash.toString());
     return true;
   }
-  localStorage.setItem("hash", serverResponse.hash.toString());
 
+  localStorage.setItem("hash", serverResponse.hash.toString());
   addGuessedPlayer(serverResponse);
   changeGoalPlayer(serverResponse.goalPlayer);
   if (serverResponse.correct) {

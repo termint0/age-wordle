@@ -7,11 +7,11 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Copy in the source code
-COPY src/app.py ./app.py
+COPY src/*.py ./
 COPY resources ./resources
 
 ENV PORT=8000
 
 EXPOSE $PORT 
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--preload", "--workers", "4", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--log-level", "info", "--preload", "--workers", "4", "app:app"]

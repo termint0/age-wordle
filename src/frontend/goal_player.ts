@@ -44,6 +44,7 @@ async function populateGoalPlayer(): Promise<void> {
   const player = await getInfo();
   for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
     const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key])
+    valueDiv.innerText = '';
     if (key === "name") {
       valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
       continue;
@@ -54,6 +55,7 @@ async function populateGoalPlayer(): Promise<void> {
   }
   for (const key of Object.keys(MULTI_ITEM_VALUES)) {
     const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key])
+    valueDiv.innerText = '';
     for (const len of player[key]) {
       const item = createObfuscatedItem();
       item.style.width = (len * CHAR_WIDTH).toString() + "px";
