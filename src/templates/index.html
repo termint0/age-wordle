@@ -39,7 +39,7 @@
     <!--</button>-->
   </div>
   <div id="modal-prompt" class="hidden modal">
-    <div class="confirm-popup bevel">
+    <div class="confirm-popup bevel background-blur">
       <!--<div class="font-large bold">-->
       <!--  Do you really want to give up?-->
       <!--</div>-->
@@ -53,7 +53,7 @@
     </div>
   </div>
   <div id="modal-info" class="hidden modal">
-    <div class="confirm-popup bevel">
+    <div class="confirm-popup bevel background-blur">
       <!--<div class="font-large bold">-->
       <!--  Do you really want to give up?-->
       <!--</div>-->
@@ -67,11 +67,11 @@
   </div>
   <div class="game">
     <div id="input-container" class="input-container">
-      <input id="player-input" name="" placeholder="Input player" class="round player-input font-large"
+      <input id="player-input" name="" placeholder="Input player" class="round player-input font-large background-blur"
         onchange="onPlayerInput()">
       <button class="give-up-button bevel font-small click" onclick="onGiveUpClick();">Give up</button>
     </div>
-    <div id="congrats-div" class="hidden congrats-div bevel">
+    <div id="congrats-div" class="hidden congrats-div bevel background-blur">
       <div class="bold font-large center">
         Congratulations!
       </div>
@@ -79,7 +79,7 @@
         You guessed the player in <span id="guess-count"></span>!
       </div>
     </div>
-    <div id="give-up-div" class="hidden congrats-div bevel">
+    <div id="give-up-div" class="hidden congrats-div bevel background-blur">
       <div class="bold font-large center">
         Too bad!
       </div>
@@ -89,7 +89,7 @@
     </div>
     <div class="players">
 
-      <div class="goal-player player " id="goal-player">
+      <div class="goal-player player background-blur" id="goal-player">
         <div id="goal-name" class="name font-large bold obfuscated round">
         </div>
         <div class="player-info">
