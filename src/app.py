@@ -1,5 +1,6 @@
 import logging
 from threading import Thread
+from multiprocessing import Value
 import time
 import flask
 import schedule
@@ -32,6 +33,12 @@ game.change_player()
 schedule.every().day.at("04:00", "UTC").do(game.change_player)
 
 
+correct_guesses = Value("i", 0)
+
+@app.route("/api/guesses-today")
+def get_correct_guesses():
+    return flask.jsonify({"count": correct_guesses.value})
+
 @app.route("/api/goal-player-info")
 def get_goal_player_info():
     curr = game.get_current_player()
@@ -54,6 +61,8 @@ def guess(name: str):
     response = game.guess(name)
     if response is None:
         return flask.jsonify(error="Player not found"), 404
+
+    correct_guesses.value += response["correct"]
     # print((time.process_time() - start_time))
     return flask.jsonify(response)
 
