@@ -58,7 +58,8 @@ def get_player_df() -> pd.DataFrame:
     player_df["name_lowercase"] = [a.lower() for a in player_df["name"]]
     player_df["age"] = [get_age(a) for a in player_df["born"]]
     player_df["end_year"] = player_df["end_year"].replace(-1, 100000)
-    player_df["country"] = [[a] for a in player_df["country"]]
+    player_df["country"] = [list(a.split(",")) for a in player_df["country"]]
+    print(player_df["country"])
     player_df["country"] = [
         [country_codes.get(str(code).upper(), code) for code in lst if code]
         for lst in player_df["country"]
