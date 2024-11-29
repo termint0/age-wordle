@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 YEAR_IN_DAYS = 365.2422
-COUNTRY_CODE_FILE = "./resources/country_codes.json"
+COUNTRY_CODE_FILE = "./resources/countries.json"
 PLAYERS_FILE = "./resources/aoedle(1).csv"
 
 INT_COLUMNS = [
@@ -50,20 +50,30 @@ def get_age(born_str: str) -> int:
     return diff_years
 
 
-def get_player_df() -> pd.DataFrame:
+def get_countries(df: pd.DataFrame) -> pd.DataFrame:
     with open(COUNTRY_CODE_FILE) as f:
-        country_codes: dict[str, str] = json.load(f)
+        country_codes: dict[str, dict[str, str]] = json.load(f)
+
+    def get_country(code):
+        code = code.upper()
+        if code not in country_codes:
+            return code
+        return country_codes[code]["emoji"] + " " + country_codes[code]["name"]
+
+    df["country"] = [list(a.split(",")) for a in df["country"]]
+    df["country"] = [
+        [get_country(code) for code in lst if code] for lst in df["country"]
+    ]
+    return df
+
+
+def get_player_df() -> pd.DataFrame:
     player_df = pd.read_csv(PLAYERS_FILE, delimiter=";")
     player_df = fix_nan(player_df)
+    player_df = get_countries(player_df)
     player_df["name_lowercase"] = [a.lower() for a in player_df["name"]]
     player_df["age"] = [get_age(a) for a in player_df["born"]]
     player_df["end_year"] = player_df["end_year"].replace(-1, 100000)
-    player_df["country"] = [list(a.split(",")) for a in player_df["country"]]
-    print(player_df["country"])
-    player_df["country"] = [
-        [country_codes.get(str(code).upper(), code) for code in lst if code]
-        for lst in player_df["country"]
-    ]
     player_df["teams"] = [
         [a.strip() for a in b.split(",") if a] for b in player_df["teams"]
     ]
@@ -126,12 +136,15 @@ def get_player_intersection(goal: dict, guess: dict) -> dict:
 
     return result
 
+
 def get_guess_info(player_df: pd.DataFrame, guess: str):
     guess_series: pd.Series = player_df.loc[guess]
     return json.loads(guess_series.to_json())
 
 
 global_idx = Value("i", 0)
+
+
 class Game:
     def __init__(self) -> None:
         self.player_df = get_player_df()
@@ -142,12 +155,10 @@ class Game:
         self._set_current(0)
         self._game_hash = hash(self._curr.values())
 
-
     def change_player(self):
         logging.info("Changing the player")
         global global_idx
         global_idx.value = random.randint(0, min(50, self.player_df.shape[0]))
-        
 
     def get_current_player(self) -> dict:
         if self.local_idx != global_idx.value:
@@ -179,6 +190,6 @@ class Game:
 
     def _set_current(self, idx: int) -> None:
         curr_series: pd.Series = self.player_df.iloc[idx]
-        self._curr: dict[str, Any] = json.loads(curr_series.to_json()) 
+        self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
         self._game_hash = hash(self._curr.values())
