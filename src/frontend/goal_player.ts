@@ -5,6 +5,7 @@ const SINGLE_ITEM_VALUES = {
   "end_year": "goal-end-year",
   "played_1v1": "goal-played-1v1",
   "played_tg": "goal-played-tg",
+  "voobly_elo": "goal-voobly-elo",
   "earnings": "goal-earnings"
 } as const;
 

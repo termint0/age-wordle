@@ -34,12 +34,16 @@ function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLD
   playerInfo.classList.add("player-info");
   playerInfo.append(
     createAgeElement(player, evaluation),
+    createCountriesElement(player, evaluation),
+    createEarningsElement(player, evaluation),
+
     createStartYearElement(player, evaluation),
     createEndYearElement(player, evaluation),
-    createCountriesElement(player, evaluation),
+
     create1v1sElement(player, evaluation),
     createTgsElement(player, evaluation),
-    createEarningsElement(player, evaluation),
+    createVooblyElement(player, evaluation),
+
     createTeamsElement(player, evaluation)
   )
   playerDiv.append(nameDiv, playerInfo);
@@ -63,7 +67,7 @@ function createAgeElement(player: Player, evaluation: GuessEvaluation): HTMLDivE
 
 function createStartYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
-  elem.children[0].innerHTML = "Playing since:";
+  elem.children[0].innerHTML = "Active since:";
   const values = elem.children[1]
   const content = valFromInt(player.start_year)
   const item = createValueItem(content);
@@ -76,7 +80,7 @@ function createStartYearElement(player: Player, evaluation: GuessEvaluation): HT
 
 function createEndYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
-  elem.children[0].innerHTML = "Played til:";
+  elem.children[0].innerHTML = "Active til:";
   const values = elem.children[1]
   let content: string;
   if (player.end_year === END_YEAR_PRESENT_VAL) {
@@ -139,6 +143,19 @@ function createEarningsElement(player: Player, evaluation: GuessEvaluation): HTM
   const content = valFromInt(player.earnings);
   const item = createValueItem(content);
   item.classList.add(...getClasses(evaluation.earnings));
+  values.append(
+    item
+  );
+  return elem;
+}
+
+function createVooblyElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
+  const elem = createValueElement();
+  elem.children[0].innerHTML = "Voobly ELO:";
+  const values = elem.children[1]
+  const content = valFromInt(player.voobly_elo);
+  const item = createValueItem(content);
+  item.classList.add(...getClasses(evaluation.voobly_elo));
   values.append(
     item
   );

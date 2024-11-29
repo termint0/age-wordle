@@ -6,6 +6,7 @@ interface Player {
   end_year: number
   played_1v1: number
   played_tg: number
+  voobly_elo: number
   earnings: number
   teams: string[]
 };
@@ -18,6 +19,7 @@ interface GoalPlayerLengths {
   end_year: number
   played_1v1: number
   played_tg: number
+  voobly_elo: number
   earnings: number
   teams: number[]
 };
@@ -31,6 +33,7 @@ interface GuessEvaluation {
   played_1v1: number
   played_tg: number
   earnings: number
+  voobly_elo: number
   teams: boolean[]
 };
 

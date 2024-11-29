@@ -180,15 +180,22 @@ function customConfirm(prompt: string, yesButtonText: string, noButtonText: stri
       cleanup();
     };
 
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape")
+        handleNo();
+    }
+
     // Cleanup function to hide dialog and remove event listeners
     const cleanup = () => {
       modal.classList.add("hidden");
       yesButton.removeEventListener('click', handleYes);
       noButton.removeEventListener('click', handleNo);
+      document.removeEventListener('keydown', keydown);
     };
 
     yesButton.addEventListener('click', handleYes);
     noButton.addEventListener('click', handleNo);
+    document.addEventListener('keydown', keydown);
   });
 }
 
@@ -210,12 +217,19 @@ function popupInfo(text: string, buttonText: string): Promise<boolean> {
       cleanup();
     };
 
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === "Escape")
+        close();
+    }
+
     // Cleanup function to hide dialog and remove event listeners
     const cleanup = () => {
       modal.classList.add("hidden");
       button.removeEventListener('click', close);
+      document.removeEventListener('keydown', keydown);
     };
 
     button.addEventListener('click', close);
+    document.addEventListener('keydown', keydown);
   });
 }
