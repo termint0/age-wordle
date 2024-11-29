@@ -14,6 +14,7 @@ const SINGLE_ITEM_VALUES = {
     "end_year": "goal-end-year",
     "played_1v1": "goal-played-1v1",
     "played_tg": "goal-played-tg",
+    "voobly_elo": "goal-voobly-elo",
     "earnings": "goal-earnings"
 };
 const MULTI_ITEM_VALUES = {
@@ -50,6 +51,7 @@ function populateGoalPlayer() {
         const player = yield getInfo();
         for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
             const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+            valueDiv.innerText = '';
             if (key === "name") {
                 valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
                 continue;
@@ -60,6 +62,7 @@ function populateGoalPlayer() {
         }
         for (const key of Object.keys(MULTI_ITEM_VALUES)) {
             const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
+            valueDiv.innerText = '';
             for (const len of player[key]) {
                 const item = createObfuscatedItem();
                 item.style.width = (len * CHAR_WIDTH).toString() + "px";
@@ -129,13 +132,13 @@ function addGuessedPlayer(serverResponse) {
 }
 function createPlayerElement(player, evaluation) {
     const playerDiv = document.createElement("div");
-    playerDiv.classList.add("player");
+    playerDiv.classList.add("player", "background-blur");
     const nameDiv = document.createElement("div");
     nameDiv.classList.add("name", "font-large", "bold");
     nameDiv.textContent = player.name;
     const playerInfo = document.createElement("div");
     playerInfo.classList.add("player-info");
-    playerInfo.append(createAgeElement(player, evaluation), createStartYearElement(player, evaluation), createEndYearElement(player, evaluation), createCountriesElement(player, evaluation), create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createEarningsElement(player, evaluation), createTeamsElement(player, evaluation));
+    playerInfo.append(createAgeElement(player, evaluation), createCountriesElement(player, evaluation), createEarningsElement(player, evaluation), createStartYearElement(player, evaluation), createEndYearElement(player, evaluation), create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createVooblyElement(player, evaluation), createTeamsElement(player, evaluation));
     playerDiv.append(nameDiv, playerInfo);
     return playerDiv;
 }
@@ -151,7 +154,7 @@ function createAgeElement(player, evaluation) {
 }
 function createStartYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Playing since:";
+    elem.children[0].innerHTML = "Active since:";
     const values = elem.children[1];
     const content = valFromInt(player.start_year);
     const item = createValueItem(content);
@@ -161,7 +164,7 @@ function createStartYearElement(player, evaluation) {
 }
 function createEndYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Played til:";
+    elem.children[0].innerHTML = "Active til:";
     const values = elem.children[1];
     let content;
     if (player.end_year === END_YEAR_PRESENT_VAL) {
@@ -215,6 +218,16 @@ function createEarningsElement(player, evaluation) {
     const content = valFromInt(player.earnings);
     const item = createValueItem(content);
     item.classList.add(...getClasses(evaluation.earnings));
+    values.append(item);
+    return elem;
+}
+function createVooblyElement(player, evaluation) {
+    const elem = createValueElement();
+    elem.children[0].innerHTML = "Voobly ELO:";
+    const values = elem.children[1];
+    const content = valFromInt(player.voobly_elo);
+    const item = createValueItem(content);
+    item.classList.add(...getClasses(evaluation.voobly_elo));
     values.append(item);
     return elem;
 }
@@ -299,6 +312,7 @@ function onGameReset() {
         return;
     }
     playersDiv.innerText = '';
+    populateGoalPlayer();
 }
 function onPlayerInput() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -325,6 +339,7 @@ function guessPlayer(name) {
         if (currGameHash && serverResponse.hash !== currGameHash) {
             onGameTimeout();
             onGameReset();
+            localStorage.setItem("hash", serverResponse.hash.toString());
             return true;
         }
         localStorage.setItem("hash", serverResponse.hash.toString());
@@ -398,14 +413,20 @@ function customConfirm(prompt, yesButtonText, noButtonText) {
             resolve(false);
             cleanup();
         };
+        const keydown = (event) => {
+            if (event.key === "Escape")
+                handleNo();
+        };
         // Cleanup function to hide dialog and remove event listeners
         const cleanup = () => {
             modal.classList.add("hidden");
             yesButton.removeEventListener('click', handleYes);
             noButton.removeEventListener('click', handleNo);
+            document.removeEventListener('keydown', keydown);
         };
         yesButton.addEventListener('click', handleYes);
         noButton.addEventListener('click', handleNo);
+        document.addEventListener('keydown', keydown);
     });
 }
 function popupInfo(text, buttonText) {
@@ -422,12 +443,18 @@ function popupInfo(text, buttonText) {
             resolve(true);
             cleanup();
         };
+        const keydown = (event) => {
+            if (event.key === "Enter" || event.key === "Escape")
+                close();
+        };
         // Cleanup function to hide dialog and remove event listeners
         const cleanup = () => {
             modal.classList.add("hidden");
             button.removeEventListener('click', close);
+            document.removeEventListener('keydown', keydown);
         };
         button.addEventListener('click', close);
+        document.addEventListener('keydown', keydown);
     });
 }
 ;
