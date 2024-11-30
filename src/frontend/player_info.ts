@@ -50,6 +50,10 @@ interface ServerResp {
 const END_YEAR_PRESENT_VAL = 100000 as const;
 const NOT_KNOWN_VAL = -1 as const;
 
+/**
+ * Creates an HTML Element for one statistic (e.g. Age)
+ * with a description div and a value container div
+ */
 function createValueElement(): HTMLDivElement {
   const mainDiv = document.createElement("div");
   mainDiv.classList.add("player-info-elem");
@@ -66,6 +70,10 @@ function createValueElement(): HTMLDivElement {
   return mainDiv;
 }
 
+/**
+ * Creates an HTML Element for one value (e.g. "TyRanT" in the teams div) with
+ * @param content content of the new div
+ */
 function createValueItem(content: string): HTMLDivElement {
   const item = document.createElement("div");
   item.classList.add("player-info-value-item");
@@ -73,6 +81,9 @@ function createValueItem(content: string): HTMLDivElement {
   return item;
 }
 
+/**
+ * A int to str function that handles unknown values
+ */
 function valFromInt(val: number): string {
   if (val === NOT_KNOWN_VAL) {
     return "unknown";
