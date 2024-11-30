@@ -26,6 +26,15 @@ STR_COLUMNS = ["name", "born", "spelling"]
 
 
 def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
+    """Replaces NaN values with empty string or -1 depending on the
+    column type specified in consts at top of the file
+
+    Args:
+        df: df to replace NaN in
+
+    Returns: df with "" and -1 replacing NaN
+
+    """
     for column in df.columns:
         if column in STR_COLUMNS or column in LIST_COLUMNS:
             df[column] = df[column].replace(np.nan, "")
@@ -37,6 +46,14 @@ def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_age(born_str: str) -> int:
+    """Get age from birth date
+
+    Args:
+        born_str: birth date
+
+    Returns: age as int
+
+    """
     if born_str == "":
         return -1
     try:
@@ -51,6 +68,14 @@ def get_age(born_str: str) -> int:
 
 
 def get_countries(df: pd.DataFrame) -> pd.DataFrame:
+    """Transform "country" column from codes into "<flag> <name>" format
+
+    Args:
+        df: df to transform
+
+    Returns: df with flags and names instead of codes
+
+    """
     with open(COUNTRY_CODE_FILE) as f:
         country_codes: dict[str, dict[str, str]] = json.load(f)
 
@@ -68,6 +93,11 @@ def get_countries(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_player_df() -> pd.DataFrame:
+    """Reads CSV file stored in PLAYERS_FILE, processes it and returns game-ready pd DataFrame
+
+    Returns: pandas DataFrame with processed infor from PLAYERS_FILE
+
+    """
     player_df = pd.read_csv(PLAYERS_FILE, delimiter=";")
     player_df = fix_nan(player_df)
     player_df = get_countries(player_df)
@@ -81,10 +111,18 @@ def get_player_df() -> pd.DataFrame:
 
 
 def add_aliases(player_df: pd.DataFrame) -> dict[str, str]:
+    """Creates a list of player aliases from player df
+
+    Args:
+        player_df: DataFrame with "spelling" and "name_lowercase" keys
+
+    Returns: a dictionary in the format {"max": "TheMax", "yo": "Mr_Yo"}
+
+    """
     player_aliases = {}
 
     for player in player_df.to_dict(orient="records"):
-        if not player["spelling"]:
+        if not player.get("spelling", None):
             continue
 
         for alias in player["spelling"].split(","):
@@ -92,7 +130,31 @@ def add_aliases(player_df: pd.DataFrame) -> dict[str, str]:
     return player_aliases
 
 
-def guess_evaluation(goal: dict, guess: dict) -> dict:
+def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
+    """Creates an evaluation dictionary for a guess
+
+    Args:
+        goal: The player to be guessed today
+        guess: The player that has been guessed
+
+    Returns: An evaluation dictionary, whose keys are the same as the players'
+            and the values are following depending on the type of the players'
+            attribute:
+
+            int: result > 0 if goal[key] > guess[key]
+                 result = 0 if goal[key] = guess[key]
+                 result < 0 if goal[key] < guess[key]
+
+            str: result = True if goal[key] = guess[key]
+                 result = False if goal[key] != guess[key]
+
+            list: list of booleans representing if goal[key][n] is in guess[key]
+                  e.g: goal[key] = [TyRanT, SY, aM]
+                       guess[key] = [Heresy, aM, TyRanT]
+
+                       result[key] = [True, False, True]
+
+    """
     result: dict[str, Any] = {}
     for key in goal.keys():
         goal_val = goal.get(key)
@@ -106,10 +168,26 @@ def guess_evaluation(goal: dict, guess: dict) -> dict:
     return result
 
 
-def get_goal_player_lengths(goal: dict) -> dict[str, int | list[int]]:
+def get_goal_player_lengths(player: dict) -> dict[str, int | list[int]]:
+    """Creates a dict representing the width in chars once displayed on page
+
+    Args:
+        player: the player whose elem lengths to measure
+
+    Returns: a dict with same keys as player and values depending
+             on types of player's attributes:
+
+             int: number of player[key]'s digits (e.g. floor(log10(player[key])) + 1)
+
+             str: length of player[key]
+
+             list: list of values applied per previous rules
+                e.g. player[key] = [TyRanT, SY] => result[key] = [6, 2]
+
+    """
     result: dict[str, Any] = {}
-    for key in goal.keys():
-        goal_val = goal[key]
+    for key in player.keys():
+        goal_val = player[key]
         if key in ["country", "teams"]:
             result[key] = [len(str(a)) for a in goal_val]
         else:
@@ -118,10 +196,28 @@ def get_goal_player_lengths(goal: dict) -> dict[str, int | list[int]]:
 
 
 def list_intersect(goal_val: list, guess_val: list) -> list:
+    """Creates an intersection of two lists, padding with None
+
+    Args:
+        goal_val: list, the result will have its length
+        guess_val: list
+
+    Returns: goal_val with None replacing items that aren't in guess_val
+
+    """
     return [x if x in guess_val else None for x in goal_val]
 
 
 def get_player_intersection(goal: dict, guess: dict) -> dict:
+    """Creates an intersection of two dictionaries, padding with None
+
+    Args:
+        goal: dict, the result will have its structure
+        guess: dict
+
+    Returns: A dict with None where the two dicts differ. list_intersect rules applied to lists.
+
+    """
     result: dict[str, Any] = {}
     for key in goal.keys():
         goal_val = goal.get(key)
@@ -137,11 +233,21 @@ def get_player_intersection(goal: dict, guess: dict) -> dict:
     return result
 
 
-def get_guess_info(player_df: pd.DataFrame, guess: str):
+def get_guess_info(player_df: pd.DataFrame, guess: str) -> dict[str, Any]:
+    """Gets the row where name_lowercase = guess and makes it jsonifiable (removes np.int64 and stuff)
+
+    Args:
+        player_df: df to get row from
+        guess: name to guess
+
+    Returns: a jsonifiable dict
+
+    """
     guess_series: pd.Series = player_df.loc[guess]
     return json.loads(guess_series.to_json())
 
 
+# Index of the current player shared across worker threads
 global_idx = Value("i", 0)
 
 
@@ -156,21 +262,45 @@ class Game:
         self._game_hash = hash(self._curr.values())
 
     def change_player(self):
+        """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
         global global_idx
         global_idx.value = random.randint(0, min(50, self.player_df.shape[0]))
 
     def get_current_player(self) -> dict:
+        """Checks for player change and returns the current player
+
+        Returns: current player dict
+
+        """
+        global global_idx
         if self.local_idx != global_idx.value:
             self._set_current(global_idx.value)
         return self._curr
 
     def get_hash(self) -> int:
+        """Checks for player change and returns the game hash 
+
+        Returns: current game hash 
+
+        """
+        global global_idx
         if self.local_idx != global_idx.value:
             self._set_current(global_idx.value)
         return self._game_hash
 
     def guess(self, name: str) -> dict | None:
+        """ Guess the player and return a response
+
+        Args:
+            name: the player's name
+
+        Returns: None if game doesn't recognize the name
+                 A dict with "hash", "correct", "guessedPlayer", "goalPlayer" and "guessEval" keys
+                 for more info about those, check get_player_intersection and guess_evaluation docs
+
+            
+        """
         name = name.lower()
         if name not in self.player_df.index:
             if name not in self.player_aliases:
@@ -189,6 +319,10 @@ class Game:
         return response
 
     def _set_current(self, idx: int) -> None:
+        """Sets current player to the one at idx
+        Args:
+            idx: number < self.player_df.shape[0]
+        """
         curr_series: pd.Series = self.player_df.iloc[idx]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
