@@ -7,7 +7,7 @@ A wordle-like game about guessing aoe 2 players.
 
 1. Type in the player name (aliases such as "viper" for "TheViper" also work!)
 2. An evaluation of the guess will appear
-3. With this new information, try again!
+3. With this new information, make the next guess!
 
 ---
 
@@ -20,12 +20,12 @@ A wordle-like game about guessing aoe 2 players.
 
 ## Running the app
 
-### Docker
+### Docker:
 1. Clone the repository: `git clone https://github.com/termint0/age-wordle`
 2. Navigate to the project directory: `cd age-wordle`
 3. Compose the image `docker compose up` (will need `sudo` on linux)
 
-### Flask (local use only)
+### Flask (local use only):
 1. Clone the repository: `git clone https://github.com/termint0/age-wordle`
 2. Navigate to the project directory: `cd age-wordle`
 3. Install the requirements: `pip install -r requirements.txt`
