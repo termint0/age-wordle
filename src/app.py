@@ -1,9 +1,14 @@
 import logging
+import random 
 from threading import Thread
 from multiprocessing import Value
 import time
 import flask
 import schedule
+import os
+
+# ensures the hash function behaves the same across threads
+os.environ["PYTHONHASHSEED"] = str(random.randint(-(10 ** 9), 10 ** 9))
 
 from age_game import (
     Game,
@@ -35,9 +40,11 @@ schedule.every().day.at("04:00", "UTC").do(game.change_player)
 
 correct_guesses = Value("i", 0)
 
+
 @app.route("/api/guesses-today")
 def get_correct_guesses():
     return flask.jsonify({"count": correct_guesses.value})
+
 
 @app.route("/api/goal-player-info")
 def get_goal_player_info():
