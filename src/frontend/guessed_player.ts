@@ -1,3 +1,6 @@
+/**
+ * Returns a list of classes (colors and chevron if wrong) to add to numerical items.
+ */
 function getClasses(num: number): string[] {
   if (num < 0) {
     return ["wrong", "chevron-up"]
@@ -8,6 +11,9 @@ function getClasses(num: number): string[] {
   }
 }
 
+/**
+ * Adds a player to displayed players and remembers the guess in localStorage
+ */
 function addGuessedPlayer(serverResponse: ServerResp): void {
   const player = serverResponse.guessedPlayer;
   const evaluation = serverResponse.guessEval;
@@ -22,6 +28,9 @@ function addGuessedPlayer(serverResponse: ServerResp): void {
   localStorage.setItem("guesses", lsGuesses);
 }
 
+/**
+ * Creates the HTML Element from the Player and GuessEvaluation objects
+ */
 function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const playerDiv = document.createElement("div");
   playerDiv.classList.add("player", "background-blur");
