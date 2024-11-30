@@ -14,11 +14,15 @@ const MULTI_ITEM_VALUES = {
   "teams": "goal-teams"
 } as const;
 
+/**
+ * Approximates the width of a character on screen
+ */
 function getCharWidth() {
   const tgPlayed = document.getElementById("goal-played-tg");
   if (tgPlayed === null) {
     return 10;
   }
+  // find the description element
   const desc = tgPlayed.previousSibling as HTMLDivElement;
   return desc.offsetWidth / desc.innerText.length
 }
@@ -26,6 +30,9 @@ function getCharWidth() {
 const CHAR_WIDTH = getCharWidth();
 const CHAR_WIDTH_LARGE = CHAR_WIDTH * 1.3;
 
+/**
+ * Fetches the player info needed to approximate obfuscated elements' widths
+ */
 async function getInfo(): Promise<GoalPlayerLengths> {
   const resp = await fetch("/api/goal-player-info");
   if (resp.status !== 200) {
@@ -35,12 +42,18 @@ async function getInfo(): Promise<GoalPlayerLengths> {
   return respJson;
 }
 
+/**
+ * Creates an item initially used for the main player's outline
+ */
 function createObfuscatedItem(): HTMLDivElement {
   const item = createValueItem("");
   item.classList.add("obfuscated");
   return item;
 }
 
+/**
+ * Gets the goal player's info from the API and sets the value items' width to match
+ */
 async function populateGoalPlayer(): Promise<void> {
   const player = await getInfo();
   for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
@@ -66,6 +79,9 @@ async function populateGoalPlayer(): Promise<void> {
 }
 
 
+/**
+ * Updates the goal player's values based on a new guess
+ */
 function changeGoalPlayer(player: Player): void {
   for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
     if (player[key] === null) {
@@ -87,6 +103,7 @@ function changeGoalPlayer(player: Player): void {
     item.classList.add("correct");
     item.style.width = "";
   }
+
   for (const key of Object.keys(MULTI_ITEM_VALUES)) {
     const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key])
     for (let i = 0; i < valueDiv.children.length; ++i) {
