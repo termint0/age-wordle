@@ -8,9 +8,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-YEAR_IN_DAYS = 365.2422
 COUNTRY_CODE_FILE = "./resources/countries.json"
-PLAYERS_FILE = "./resources/aoedle(1).csv"
+PLAYERS_FILE = "./resources/aoedle.csv"
+PICKABLE_PLAYERS_FILE = "./resources/possible_players.json"
 
 INT_COLUMNS = [
     "age",
@@ -20,9 +20,16 @@ INT_COLUMNS = [
     "played_tg",
     "voobly_elo",
     "earnings",
+    "born",
 ]
 LIST_COLUMNS = ["country", "teams"]
-STR_COLUMNS = ["name", "born", "spelling"]
+STR_COLUMNS = ["name", "spelling"]
+
+
+def get_pickable_players() -> list[str]:
+    with open(PICKABLE_PLAYERS_FILE) as f:
+        players = json.load(f)
+    return players["players"]
 
 
 def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,7 +52,7 @@ def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_age(born_str: str) -> int:
+def get_age(born: int) -> int:
     """Get age from birth date
 
     Args:
@@ -54,16 +61,10 @@ def get_age(born_str: str) -> int:
     Returns: age as int
 
     """
-    if born_str == "":
+    if born == -1:
         return -1
-    try:
-        born = datetime.datetime.strptime(born_str, "%m/%d/%y")
-    except Exception:
-        # print(born_str)
-        born = datetime.datetime.strptime(born_str, "%Y")
-    diff: datetime.timedelta = datetime.datetime.today() - born
-    diff_years_flt = diff.days / YEAR_IN_DAYS
-    diff_years = int(diff_years_flt)
+    this_year = datetime.datetime.now().year
+    diff_years = int(this_year - born)
     return diff_years
 
 
@@ -255,6 +256,7 @@ correct_guesses = Value("i", 0)
 class Game:
     def __init__(self) -> None:
         self.player_df = get_player_df()
+        self.pickable_players = get_pickable_players()
         self.player_aliases: dict[str, str] = add_aliases(self.player_df)
         self.player_df = self.player_df.set_index("name_lowercase")
         self.local_idx = 0
@@ -266,7 +268,7 @@ class Game:
         """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
         global global_idx, correct_guesses
-        global_idx.value = random.randint(0, min(50, self.player_df.shape[0]))
+        global_idx.value = random.randint(0, len(self.pickable_players) - 1)
         correct_guesses.value = 0
 
     def get_current_player(self) -> dict:
@@ -281,9 +283,9 @@ class Game:
         return self._curr
 
     def get_hash(self) -> int:
-        """Checks for player change and returns the game hash 
+        """Checks for player change and returns the game hash
 
-        Returns: current game hash 
+        Returns: current game hash
 
         """
         global global_idx
@@ -292,7 +294,7 @@ class Game:
         return self._game_hash
 
     def guess(self, name: str) -> dict | None:
-        """ Guess the player and return a response
+        """Guess the player and return a response
 
         Args:
             name: the player's name
@@ -301,7 +303,7 @@ class Game:
                  A dict with "hash", "correct", "guessedPlayer", "goalPlayer" and "guessEval" keys
                  for more info about those, check get_player_intersection and guess_evaluation docs
 
-            
+
         """
         name = name.lower()
         if name not in self.player_df.index:
@@ -325,7 +327,8 @@ class Game:
         Args:
             idx: number < self.player_df.shape[0]
         """
-        curr_series: pd.Series = self.player_df.iloc[idx]
+        name = self.pickable_players[idx]
+        curr_series: pd.Series = self.player_df.loc[name]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
         self._game_hash = hash(self._curr.values())
