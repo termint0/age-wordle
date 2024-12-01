@@ -10,6 +10,7 @@ import pandas as pd
 
 COUNTRY_CODE_FILE = "./resources/countries.json"
 PLAYERS_FILE = "./resources/aoedle.csv"
+PICKABLE_PLAYERS_FILE = "./resources/possible_players.json"
 
 INT_COLUMNS = [
     "age",
@@ -23,6 +24,12 @@ INT_COLUMNS = [
 ]
 LIST_COLUMNS = ["country", "teams"]
 STR_COLUMNS = ["name", "spelling"]
+
+
+def get_pickable_players() -> list[str]:
+    with open(PICKABLE_PLAYERS_FILE) as f:
+        players = json.load(f)
+    return players["players"]
 
 
 def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
@@ -249,6 +256,7 @@ correct_guesses = Value("i", 0)
 class Game:
     def __init__(self) -> None:
         self.player_df = get_player_df()
+        self.pickable_players = get_pickable_players()
         self.player_aliases: dict[str, str] = add_aliases(self.player_df)
         self.player_df = self.player_df.set_index("name_lowercase")
         self.local_idx = 0
@@ -260,7 +268,7 @@ class Game:
         """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
         global global_idx, correct_guesses
-        global_idx.value = random.randint(0, min(50, self.player_df.shape[0]))
+        global_idx.value = random.randint(0, len(self.pickable_players) - 1)
         correct_guesses.value = 0
 
     def get_current_player(self) -> dict:
@@ -319,7 +327,8 @@ class Game:
         Args:
             idx: number < self.player_df.shape[0]
         """
-        curr_series: pd.Series = self.player_df.iloc[idx]
+        name = self.pickable_players[idx]
+        curr_series: pd.Series = self.player_df.loc[name]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
         self._game_hash = hash(self._curr.values())
