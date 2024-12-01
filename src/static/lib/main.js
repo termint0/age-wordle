@@ -21,16 +21,15 @@ const MULTI_ITEM_VALUES = {
     "country": "goal-country",
     "teams": "goal-teams"
 };
-function getCharWidth() {
-    const tgPlayed = document.getElementById("goal-played-tg");
-    if (tgPlayed === null) {
-        return 10;
-    }
-    const desc = tgPlayed.previousSibling;
-    return desc.offsetWidth / desc.innerText.length;
+const DEFAULT_WIDTH = 80;
+const WIDTH_VARIANCE = 20;
+const LARGE_FONT_DIV_SCALE = 1.4;
+function getWidth() {
+    return DEFAULT_WIDTH - (WIDTH_VARIANCE / 2) + WIDTH_VARIANCE * Math.random();
 }
-const CHAR_WIDTH = getCharWidth();
-const CHAR_WIDTH_LARGE = CHAR_WIDTH * 1.3;
+/**
+ * Fetches the player info needed to approximate obfuscated elements' widths
+ */
 function getInfo() {
     return __awaiter(this, void 0, void 0, function* () {
         const resp = yield fetch("/api/goal-player-info");
@@ -41,11 +40,17 @@ function getInfo() {
         return respJson;
     });
 }
+/**
+ * Creates an item initially used for the main player's outline
+ */
 function createObfuscatedItem() {
     const item = createValueItem("");
     item.classList.add("obfuscated");
     return item;
 }
+/**
+ * Gets the goal player's info from the API and sets the value items' width to match
+ */
 function populateGoalPlayer() {
     return __awaiter(this, void 0, void 0, function* () {
         const player = yield getInfo();
@@ -53,24 +58,27 @@ function populateGoalPlayer() {
             const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
             valueDiv.innerText = '';
             if (key === "name") {
-                valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
+                valueDiv.style.width = (getWidth() * LARGE_FONT_DIV_SCALE).toString() + "px";
                 continue;
             }
             const item = createObfuscatedItem();
-            item.style.width = (player[key] * CHAR_WIDTH).toString() + "px";
+            item.style.width = getWidth().toString() + "px";
             valueDiv === null || valueDiv === void 0 ? void 0 : valueDiv.append(item);
         }
         for (const key of Object.keys(MULTI_ITEM_VALUES)) {
             const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
             valueDiv.innerText = '';
-            for (const len of player[key]) {
+            for (const _ of player[key]) {
                 const item = createObfuscatedItem();
-                item.style.width = (len * CHAR_WIDTH).toString() + "px";
+                item.style.width = getWidth().toString() + "px";
                 valueDiv === null || valueDiv === void 0 ? void 0 : valueDiv.append(item);
             }
         }
     });
 }
+/**
+ * Updates the goal player's values based on a new guess
+ */
 function changeGoalPlayer(player) {
     for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
         if (player[key] === null) {
@@ -106,6 +114,9 @@ function changeGoalPlayer(player) {
         }
     }
 }
+/**
+ * Returns a list of classes (colors and chevron if wrong) to add to numerical items.
+ */
 function getClasses(num) {
     if (num < 0) {
         return ["wrong", "chevron-up"];
@@ -117,6 +128,9 @@ function getClasses(num) {
         return ["correct"];
     }
 }
+/**
+ * Adds a player to displayed players and remembers the guess in localStorage
+ */
 function addGuessedPlayer(serverResponse) {
     const player = serverResponse.guessedPlayer;
     const evaluation = serverResponse.guessEval;
@@ -130,6 +144,9 @@ function addGuessedPlayer(serverResponse) {
     lsGuesses = !lsGuesses ? player.name : lsGuesses + "," + player.name;
     localStorage.setItem("guesses", lsGuesses);
 }
+/**
+ * Creates the HTML Element from the Player and GuessEvaluation objects
+ */
 function createPlayerElement(player, evaluation) {
     const playerDiv = document.createElement("div");
     playerDiv.classList.add("player", "background-blur");
@@ -465,6 +482,10 @@ function popupInfo(text, buttonText) {
 //const CHEVRON_DOWN = "&#x25BC;" as const;
 const END_YEAR_PRESENT_VAL = 100000;
 const NOT_KNOWN_VAL = -1;
+/**
+ * Creates an HTML Element for one statistic (e.g. Age)
+ * with a description div and a value container div
+ */
 function createValueElement() {
     const mainDiv = document.createElement("div");
     mainDiv.classList.add("player-info-elem");
@@ -476,12 +497,19 @@ function createValueElement() {
     mainDiv.appendChild(value);
     return mainDiv;
 }
+/**
+ * Creates an HTML Element for one value (e.g. "TyRanT" in the teams div) with
+ * @param content content of the new div
+ */
 function createValueItem(content) {
     const item = document.createElement("div");
     item.classList.add("player-info-value-item");
     item.innerHTML = content;
     return item;
 }
+/**
+ * A int to str function that handles unknown values
+ */
 function valFromInt(val) {
     if (val === NOT_KNOWN_VAL) {
         return "unknown";
@@ -491,12 +519,18 @@ function valFromInt(val) {
     }
 }
 const RES_DIR = "/static/res/";
+/**
+ * Switches theme and saves the result in localStorage
+ */
 function onThemeSwitch() {
     const oldTheme = localStorage.getItem("theme") || "light";
     const newTheme = oldTheme === "dark" ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     setTheme();
 }
+/**
+ * Sets theme based on localStorage
+ */
 function setTheme() {
     const icon = document.getElementById("theme-icon") || null;
     if (icon === null) {

@@ -10,7 +10,7 @@ import pandas as pd
 
 YEAR_IN_DAYS = 365.2422
 COUNTRY_CODE_FILE = "./resources/countries.json"
-PLAYERS_FILE = "./resources/aoedle(1).csv"
+PLAYERS_FILE = "./resources/aoedle.csv"
 
 INT_COLUMNS = [
     "age",
