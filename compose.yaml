@@ -11,4 +11,13 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     ports:
-      - "80:80"
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/:/etc/nginx/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw

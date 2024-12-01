@@ -24,7 +24,7 @@ RUN tsc && \
     google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
 
 
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+# COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80 
 CMD ["nginx", "-g", "daemon off;"]
