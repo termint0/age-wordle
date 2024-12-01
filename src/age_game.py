@@ -8,7 +8,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-YEAR_IN_DAYS = 365.2422
 COUNTRY_CODE_FILE = "./resources/countries.json"
 PLAYERS_FILE = "./resources/aoedle.csv"
 
@@ -20,9 +19,10 @@ INT_COLUMNS = [
     "played_tg",
     "voobly_elo",
     "earnings",
+    "born",
 ]
 LIST_COLUMNS = ["country", "teams"]
-STR_COLUMNS = ["name", "born", "spelling"]
+STR_COLUMNS = ["name", "spelling"]
 
 
 def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,7 +45,7 @@ def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_age(born_str: str) -> int:
+def get_age(born: int) -> int:
     """Get age from birth date
 
     Args:
@@ -54,16 +54,10 @@ def get_age(born_str: str) -> int:
     Returns: age as int
 
     """
-    if born_str == "":
+    if born == -1:
         return -1
-    try:
-        born = datetime.datetime.strptime(born_str, "%m/%d/%y")
-    except Exception:
-        # print(born_str)
-        born = datetime.datetime.strptime(born_str, "%Y")
-    diff: datetime.timedelta = datetime.datetime.today() - born
-    diff_years_flt = diff.days / YEAR_IN_DAYS
-    diff_years = int(diff_years_flt)
+    this_year = datetime.datetime.now().year
+    diff_years = int(this_year - born)
     return diff_years
 
 
@@ -281,9 +275,9 @@ class Game:
         return self._curr
 
     def get_hash(self) -> int:
-        """Checks for player change and returns the game hash 
+        """Checks for player change and returns the game hash
 
-        Returns: current game hash 
+        Returns: current game hash
 
         """
         global global_idx
@@ -292,7 +286,7 @@ class Game:
         return self._game_hash
 
     def guess(self, name: str) -> dict | None:
-        """ Guess the player and return a response
+        """Guess the player and return a response
 
         Args:
             name: the player's name
@@ -301,7 +295,7 @@ class Game:
                  A dict with "hash", "correct", "guessedPlayer", "goalPlayer" and "guessEval" keys
                  for more info about those, check get_player_intersection and guess_evaluation docs
 
-            
+
         """
         name = name.lower()
         if name not in self.player_df.index:
