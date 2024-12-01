@@ -12,6 +12,7 @@ os.environ["PYTHONHASHSEED"] = str(random.randint(0, 4294967295))
 
 from age_game import (
     Game,
+    correct_guesses,
     get_goal_player_lengths,
 )
 
@@ -38,7 +39,6 @@ game.change_player()
 schedule.every().day.at("04:00", "UTC").do(game.change_player)
 
 
-correct_guesses = Value("i", 0)
 
 
 @app.route("/api/guesses-today")

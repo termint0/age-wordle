@@ -249,6 +249,7 @@ def get_guess_info(player_df: pd.DataFrame, guess: str) -> dict[str, Any]:
 
 # Index of the current player shared across worker threads
 global_idx = Value("i", 0)
+correct_guesses = Value("i", 0)
 
 
 class Game:
@@ -264,8 +265,9 @@ class Game:
     def change_player(self):
         """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
-        global global_idx
+        global global_idx, correct_guesses
         global_idx.value = random.randint(0, min(50, self.player_df.shape[0]))
+        correct_guesses.value = 0
 
     def get_current_player(self) -> dict:
         """Checks for player change and returns the current player
