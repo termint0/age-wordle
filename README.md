@@ -1,7 +1,6 @@
-# Agedle (name is a work in progress)
+# Agedle
 
 A wordle-like game about guessing aoe 2 players.
----
 
 ## How to Play
 
@@ -32,5 +31,5 @@ A wordle-like game about guessing aoe 2 players.
 4. Run the app: `python3 src/app.py`
 
 ## License
-The application's code is published under GPLv3.0
+The application's code is published under GPLv3.0\
 The data used is publised under CC-BY-SA as the information about players has been retrieved from Liquipedia
