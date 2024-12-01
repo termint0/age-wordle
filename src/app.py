@@ -8,7 +8,7 @@ import schedule
 import os
 
 # ensures the hash function behaves the same across threads
-os.environ["PYTHONHASHSEED"] = str(random.randint(-(10 ** 9), 10 ** 9))
+os.environ["PYTHONHASHSEED"] = str(random.randint(0, 4294967295))
 
 from age_game import (
     Game,
