@@ -14,21 +14,12 @@ const MULTI_ITEM_VALUES = {
   "teams": "goal-teams"
 } as const;
 
-/**
- * Approximates the width of a character on screen
- */
-function getCharWidth() {
-  const tgPlayed = document.getElementById("goal-played-tg");
-  if (tgPlayed === null) {
-    return 10;
-  }
-  // find the description element
-  const desc = tgPlayed.previousSibling as HTMLDivElement;
-  return desc.offsetWidth / desc.innerText.length
-}
+const DEFAULT_WIDTH = 100 as const;
+const WIDTH_VARIANCE = 20 as const
 
-const CHAR_WIDTH = getCharWidth();
-const CHAR_WIDTH_LARGE = CHAR_WIDTH * 1.3;
+function getWidth(): number {
+  return DEFAULT_WIDTH - (WIDTH_VARIANCE / 2) + WIDTH_VARIANCE * Math.random();
+}
 
 /**
  * Fetches the player info needed to approximate obfuscated elements' widths
@@ -60,19 +51,19 @@ async function populateGoalPlayer(): Promise<void> {
     const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key])
     valueDiv.innerText = '';
     if (key === "name") {
-      valueDiv.style.width = (player[key] * CHAR_WIDTH_LARGE).toString() + "px";
+      valueDiv.style.width = getWidth().toString() + "px";
       continue;
     }
     const item = createObfuscatedItem();
-    item.style.width = (player[key] * CHAR_WIDTH).toString() + "px";
+    item.style.width = getWidth().toString() + "px";
     valueDiv?.append(item);
   }
   for (const key of Object.keys(MULTI_ITEM_VALUES)) {
     const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key])
     valueDiv.innerText = '';
-    for (const len of player[key]) {
+    for (const _ of player[key]) {
       const item = createObfuscatedItem();
-      item.style.width = (len * CHAR_WIDTH).toString() + "px";
+      item.style.width = getWidth().toString() + "px";
       valueDiv?.append(item);
     }
   }
