@@ -14,8 +14,9 @@ const MULTI_ITEM_VALUES = {
   "teams": "goal-teams"
 } as const;
 
-const DEFAULT_WIDTH = 100 as const;
+const DEFAULT_WIDTH = 80 as const;
 const WIDTH_VARIANCE = 20 as const
+const LARGE_FONT_DIV_SCALE = 1.4 as const
 
 function getWidth(): number {
   return DEFAULT_WIDTH - (WIDTH_VARIANCE / 2) + WIDTH_VARIANCE * Math.random();
@@ -51,7 +52,7 @@ async function populateGoalPlayer(): Promise<void> {
     const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key])
     valueDiv.innerText = '';
     if (key === "name") {
-      valueDiv.style.width = getWidth().toString() + "px";
+      valueDiv.style.width = (getWidth() * LARGE_FONT_DIV_SCALE).toString() + "px";
       continue;
     }
     const item = createObfuscatedItem();
