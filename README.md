@@ -30,3 +30,7 @@ A wordle-like game about guessing aoe 2 players.
 2. Navigate to the project directory: `cd age-wordle`
 3. Install the requirements: `pip install -r requirements.txt`
 4. Run the app: `python3 src/app.py`
+
+## License
+The application's code is published under GPLv3.0
+The data used is publised under CC-BY-SA as the information about players has been retrieved from Liquipedia
