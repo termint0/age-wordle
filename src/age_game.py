@@ -328,7 +328,7 @@ class Game:
             idx: number < self.player_df.shape[0]
         """
         name = self.pickable_players[idx]
-        curr_series: pd.Series = self.player_df.loc[name]
+        curr_series: pd.Series = self.player_df.loc[name.lower()]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
         self._game_hash = hash(self._curr.values())
