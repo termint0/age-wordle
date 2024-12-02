@@ -29,6 +29,7 @@ A wordle-like game about guessing aoe 2 players.
 2. Navigate to the project directory: `cd age-wordle`
 3. Install the requirements: `pip install -r requirements.txt`
 4. Run the app: `python3 src/app.py`
+I included the compiled JS so that you can run it out of the box, but it might happen that I forgot to compile some changes and it's not upto date. In that case either compile it yourself and add a PR, or use the docker app.
 
 ## License
 The application's code is published under GPLv3.0\
