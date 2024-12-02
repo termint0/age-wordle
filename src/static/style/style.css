@@ -290,3 +290,22 @@ footer {
 footer a {
   color: var(--col-text)
 }
+.about-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.about-panel {
+  max-width: 1000px;
+  background-color: var(--col-main);
+  margin: 0px auto;
+  padding: 30px;
+  flex-grow: 1;
+
+}
+
+.about-panel h1 {
+  font-size: 32px;
+  text-align: center;
+}
