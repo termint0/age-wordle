@@ -25,6 +25,9 @@ INT_COLUMNS = [
 LIST_COLUMNS = ["country", "teams"]
 STR_COLUMNS = ["name", "spelling"]
 
+MISSING_STR_VAL = ""
+MISSING_INT_VAL = -1
+TIL_PRESENT_VAL = 100000
 
 def get_pickable_players() -> list[str]:
     with open(PICKABLE_PLAYERS_FILE) as f:
@@ -44,10 +47,10 @@ def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
     """
     for column in df.columns:
         if column in STR_COLUMNS or column in LIST_COLUMNS:
-            df[column] = df[column].replace(np.nan, "")
+            df[column] = df[column].replace(np.nan, MISSING_STR_VAL)
             df[column] = df[column].astype(str)
         if column in INT_COLUMNS:
-            df[column] = df[column].replace(np.nan, -1)
+            df[column] = df[column].replace(np.nan, MISSING_INT_VAL)
             df[column] = df[column].astype(int)
     return df
 
@@ -61,8 +64,8 @@ def get_age(born: int) -> int:
     Returns: age as int
 
     """
-    if born == -1:
-        return -1
+    if born == MISSING_INT_VAL:
+        return MISSING_INT_VAL
     this_year = datetime.datetime.now().year
     diff_years = int(this_year - born)
     return diff_years
@@ -104,7 +107,7 @@ def get_player_df() -> pd.DataFrame:
     player_df = get_countries(player_df)
     player_df["name_lowercase"] = [a.lower() for a in player_df["name"]]
     player_df["age"] = [get_age(a) for a in player_df["born"]]
-    player_df["end_year"] = player_df["end_year"].replace(-1, 100000)
+    player_df["end_year"] = player_df["end_year"].replace(MISSING_INT_VAL, TIL_PRESENT_VAL)
     player_df["teams"] = [
         [a.strip() for a in b.split(",") if a] for b in player_df["teams"]
     ]
@@ -145,6 +148,7 @@ def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
             int: result > 0 if goal[key] > guess[key]
                  result = 0 if goal[key] = guess[key]
                  result < 0 if goal[key] < guess[key]
+                 result = None if goal[key] indicates the value is unknown
 
             str: result = True if goal[key] = guess[key]
                  result = False if goal[key] != guess[key]
@@ -163,8 +167,10 @@ def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
         if key in LIST_COLUMNS:
             result[key] = [a in goal_val for a in guess_val]
         elif key in INT_COLUMNS:
-            result[key] = goal_val - guess_val
-        else:
+            val = goal_val - guess_val
+            if val == 0 or goal_val != MISSING_INT_VAL:
+                result[key] = val
+        elif key in STR_COLUMNS:
             result[key] = goal_val == guess_val
     return result
 

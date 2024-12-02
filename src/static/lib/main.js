@@ -118,6 +118,9 @@ function changeGoalPlayer(player) {
  * Returns a list of classes (colors and chevron if wrong) to add to numerical items.
  */
 function getClasses(num) {
+    if (num === undefined) {
+        return ["wrong"];
+    }
     if (num < 0) {
         return ["wrong", "chevron-up"];
     }

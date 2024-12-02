@@ -26,14 +26,14 @@ interface GoalPlayerLengths {
 
 interface GuessEvaluation {
   name: boolean
-  age: number
+  age?: number
   country: boolean[]
-  start_year: number
-  end_year: number
-  played_1v1: number
-  played_tg: number
+  start_year?: number
+  end_year?: number
+  played_1v1?: number
+  played_tg?: number
   earnings: number
-  voobly_elo: number
+  voobly_elo?: number
   teams: boolean[]
 };
 
