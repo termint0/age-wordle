@@ -306,6 +306,7 @@ footer {
 footer a {
   color: var(--col-text)
 }
+
 .about-container {
   display: flex;
   flex-direction: column;
