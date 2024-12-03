@@ -44,7 +44,8 @@ function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLD
     createGameStatsPiece(player, evaluation),
     createTeamsPiece(player, evaluation),
   )
-  playerDiv.append();
+
+  playerDiv.lastElementChild.classList.add("last-piece");
 
   return playerDiv;
 }
