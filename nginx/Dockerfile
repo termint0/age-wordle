@@ -6,11 +6,11 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     npm
 
-RUN /usr/local/bin/npm install npm@latest -g && \
-    /usr/local/bin/npm install n -g && \
+RUN npm install npm@latest -g && \
+    npm install n -g && \
     n latest
 
-RUN /usr/local/bin/npm install -g \
+RUN npm install -g \
     typescript \
     google-closure-compiler
 

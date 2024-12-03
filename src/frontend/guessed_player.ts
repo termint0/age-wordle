@@ -45,14 +45,13 @@ function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLD
     createTeamsPiece(player, evaluation),
   )
 
-  playerDiv.lastElementChild.classList.add("last-piece");
-
   return playerDiv;
 }
 
 function createPersonalInfoPiece(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const pieceDiv = createPlayerPiece();
   const description = pieceDiv.children[0];
+  description.classList.remove("font-medium")
   description.classList.add("name", "font-large", "bold")
   description.innerHTML = player.name;
   pieceDiv.children[1].append(

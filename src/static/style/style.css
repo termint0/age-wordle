@@ -232,8 +232,12 @@ header {
   border-color: var(--col-text-2);
 }
 
+.player-div-piece:nth-child(4) {
+  flex-basis: 100%;
+}
+
 .player .player-div-piece {
-  padding: 20px 40px;
+  padding: 10px 20px;
 
   display: flex;
   flex-direction: column;
@@ -250,10 +254,6 @@ header {
 
 }
 
-.player .last-piece {
-  flex-grow: 10;
-}
-
 .player .player-div-piece .player-div-piece-description {
 
   display: flex;
@@ -262,7 +262,6 @@ header {
 
   font-weight: bold;
 }
-
 
 .player .player-div-piece .player-info-group {
   display: flex;
