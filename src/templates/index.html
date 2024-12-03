@@ -89,44 +89,74 @@
     <div class="players">
 
       <div class="goal-player player background-blur" id="goal-player">
-        <div id="goal-name" class="name font-large bold obfuscated round">
+
+        <div class="player-div-piece">
+          <div class="player-div-piece-description">
+
+            <div id="goal-name" class="name font-large bold obfuscated round center">
+            </div>
+          </div>
+          <div class="player-info-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Age:</div>
+              <div id="goal-age" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Countries: </div>
+              <div id="goal-country" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Earnings: </div>
+              <div id="goal-earnings" class="player-info-value"> </div>
+            </div>
+          </div>
         </div>
-        <div class="player-info">
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Age:</div>
-            <div id="goal-age" class="player-info-value"> </div>
+
+        <div class="player-div-piece">
+          <div class="font-medium player-div-piece-description">
+            Active:
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Countries: </div>
-            <div id="goal-country" class="player-info-value"> </div>
+          <div class="player-info-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold">Since:</div>
+              <div id="goal-start-year" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold">Til:</div>
+              <div id="goal-end-year" class="player-info-value"> </div>
+            </div>
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Earnings: </div>
-            <div id="goal-earnings" class="player-info-value"> </div>
+        </div>
+
+        <div class="player-div-piece">
+          <div class="font-medium player-div-piece-description">
+            Game Stats:
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Active since:</div>
-            <div id="goal-start-year" class="player-info-value"> </div>
+          <div class="player-info-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> 1v1s played: </div>
+              <div id="goal-played-1v1" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> TGs played: </div>
+              <div id="goal-played-tg" class="player-info-value"> </div>
+            </div>
+            <div class="player-info-elem">
+              <div class="player-info-description bold"> Voobly ELO: </div>
+              <div id="goal-voobly-elo" class="player-info-value"> </div>
+            </div>
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Active til:</div>
-            <div id="goal-end-year" class="player-info-value"> </div>
+        </div>
+
+        <div class="player-div-piece">
+          <div class="font-medium player-div-piece-description">
+            Teams:
           </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> 1v1s played: </div>
-            <div id="goal-played-1v1" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> TGs played: </div>
-            <div id="goal-played-tg" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Voobly ELO: </div>
-            <div id="goal-voobly-elo" class="player-info-value"> </div>
-          </div>
-          <div class="player-info-elem">
-            <div class="player-info-description bold"> Teams: </div>
-            <div id="goal-teams" class="player-info-value"> </div>
+          <div class="player-info-group">
+            <div class="player-info-elem">
+              <div class="player-info-description bold"></div>
+              <div id="goal-teams" class="player-info-value"> </div>
+            </div>
           </div>
         </div>
         <script>
@@ -149,9 +179,11 @@
     </p>
 
     <p>
-      You play by typing names of players. For each player name you enter, the game will show you which characteristics
+      You play by typing names of players. For each player name you enter, the game will show you which
+      characteristics
       your guessed player has in common with the mystery player, out of: Age, country, total prize money earned,
-      activity span, number of 1v1 and TG games played on the DE ranked ladder, highest Elo achieved on voobly, and team
+      activity span, number of 1v1 and TG games played on the DE ranked ladder, highest Elo achieved on voobly, and
+      team
       history. You win once you found the mystery player, and you can comeback the next day for a new attempt.
     </p>
     <a href="/about">More info & Privacy policy</a>

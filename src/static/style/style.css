@@ -219,45 +219,75 @@ header {
 
 .player {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: stretch;
+  flex-wrap: wrap;
 
-  padding: 25px;
-  /*margin: 10px;*/
   max-width: 1100px;
-  gap: 15px;
 
   background-color: var(--col-main);
+
+  border-style: solid;
+  border-width: 2px;
 }
 
-.player-info {
+.player .player-div-piece {
+  padding: 15px 30px;
+
   display: flex;
-  gap: 14px 30px;
+  flex-direction: column;
+  flex-grow: 1;
+
+  border-style: solid;
+  border-width: 1px;
+
+  gap: 10px;
+
+  align-content: center;
+  justify-content: space-between;
+
+}
+
+.player .player-div-piece .player-div-piece-description {
+
+  display: flex;
+  text-align: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+.player .player-div-piece .player-info-group {
+  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
+
+  justify-content: space-between;
+  gap: 15px;
 }
 
-.player-info-elem-group {
-  display: flex;
-}
-
-.player-info-elem {
+.player-info-group .player-info-elem {
   display: flex;
   gap: 6px;
   flex-direction: column;
+  flex-grow: 1;
 }
 
-.player-info-description {
-  color: var(--col-text-2)
+.player-info-elem .player-info-description {
+  color: var(--col-text-2);
+  text-align: center;
 }
 
-.player-info-value {
+.player-info-elem .player-info-value {
   display: flex;
   gap: 12px;
   flex-direction: row;
   flex-wrap: wrap;
+
+  justify-content: center;
 }
 
-.player-info-value-item {
+.player-info-value .player-info-value-item {
   padding: 3px 12px;
   border-radius: 15px;
   /*background-color: green;*/

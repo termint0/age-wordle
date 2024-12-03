@@ -153,14 +153,38 @@ function addGuessedPlayer(serverResponse) {
 function createPlayerElement(player, evaluation) {
     const playerDiv = document.createElement("div");
     playerDiv.classList.add("player", "background-blur");
-    const nameDiv = document.createElement("div");
-    nameDiv.classList.add("name", "font-large", "bold");
-    nameDiv.textContent = player.name;
-    const playerInfo = document.createElement("div");
-    playerInfo.classList.add("player-info");
-    playerInfo.append(createAgeElement(player, evaluation), createCountriesElement(player, evaluation), createEarningsElement(player, evaluation), createStartYearElement(player, evaluation), createEndYearElement(player, evaluation), create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createVooblyElement(player, evaluation), createTeamsElement(player, evaluation));
-    playerDiv.append(nameDiv, playerInfo);
+    playerDiv.append(createPersonalInfoPiece(player, evaluation), createActivityPiece(player, evaluation), createGameStatsPiece(player, evaluation), createTeamsPiece(player, evaluation));
+    playerDiv.append();
     return playerDiv;
+}
+function createPersonalInfoPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.classList.add("name", "font-large", "bold");
+    description.innerHTML = player.name;
+    pieceDiv.children[1].append(createAgeElement(player, evaluation), createCountriesElement(player, evaluation), createEarningsElement(player, evaluation));
+    return pieceDiv;
+}
+function createActivityPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Active:";
+    pieceDiv.children[1].append(createStartYearElement(player, evaluation), createEndYearElement(player, evaluation));
+    return pieceDiv;
+}
+function createGameStatsPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Game Stats:";
+    pieceDiv.children[1].append(create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createVooblyElement(player, evaluation));
+    return pieceDiv;
+}
+function createTeamsPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Teams:";
+    pieceDiv.children[1].append(createTeamsElement(player, evaluation));
+    return pieceDiv;
 }
 function createAgeElement(player, evaluation) {
     const elem = createValueElement();
@@ -174,7 +198,7 @@ function createAgeElement(player, evaluation) {
 }
 function createStartYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Active since:";
+    elem.children[0].innerHTML = "Since:";
     const values = elem.children[1];
     const content = valFromInt(player.start_year);
     const item = createValueItem(content);
@@ -184,7 +208,7 @@ function createStartYearElement(player, evaluation) {
 }
 function createEndYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Active til:";
+    elem.children[0].innerHTML = "Til:";
     const values = elem.children[1];
     let content;
     if (player.end_year === END_YEAR_PRESENT_VAL) {
@@ -253,7 +277,7 @@ function createVooblyElement(player, evaluation) {
 }
 function createTeamsElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Teams:";
+    elem.children[0].innerHTML = "";
     const values = elem.children[1];
     for (let i = 0; i < player.teams.length; ++i) {
         const team = player.teams[i];
@@ -493,6 +517,16 @@ function popupInfo(text, buttonText) {
 //const CHEVRON_DOWN = "&#x25BC;" as const;
 const END_YEAR_PRESENT_VAL = 100000;
 const NOT_KNOWN_VAL = -1;
+function createPlayerPiece() {
+    const groupPiece = document.createElement("div");
+    groupPiece.classList.add("player-div-piece");
+    const description = document.createElement("div");
+    description.classList.add("font-medium", "player-div-piece-description");
+    const infoGroup = document.createElement("div");
+    infoGroup.classList.add("player-info-group");
+    groupPiece.append(description, infoGroup);
+    return groupPiece;
+}
 /**
  * Creates an HTML Element for one statistic (e.g. Age)
  * with a description div and a value container div
