@@ -303,7 +303,7 @@ footer {
   text-align: center;
 }
 
-footer a {
+a {
   color: var(--col-text)
 }
 
