@@ -154,7 +154,7 @@ function createPlayerElement(player, evaluation) {
     const playerDiv = document.createElement("div");
     playerDiv.classList.add("player", "background-blur");
     playerDiv.append(createPersonalInfoPiece(player, evaluation), createActivityPiece(player, evaluation), createGameStatsPiece(player, evaluation), createTeamsPiece(player, evaluation));
-    playerDiv.append();
+    playerDiv.lastElementChild.classList.add("last-piece");
     return playerDiv;
 }
 function createPersonalInfoPiece(player, evaluation) {

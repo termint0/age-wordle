@@ -229,10 +229,11 @@ header {
 
   border-style: solid;
   border-width: 2px;
+  border-color: var(--col-text-2);
 }
 
 .player .player-div-piece {
-  padding: 15px 30px;
+  padding: 20px 40px;
 
   display: flex;
   flex-direction: column;
@@ -240,12 +241,17 @@ header {
 
   border-style: solid;
   border-width: 1px;
+  border-color: var(--col-text-2);
 
   gap: 10px;
 
   align-content: center;
   justify-content: space-between;
 
+}
+
+.player .last-piece {
+  flex-grow: 10;
 }
 
 .player .player-div-piece .player-div-piece-description {
@@ -256,6 +262,7 @@ header {
 
   font-weight: bold;
 }
+
 
 .player .player-div-piece .player-info-group {
   display: flex;
