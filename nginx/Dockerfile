@@ -6,11 +6,11 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     npm
 
-RUN npm install npm@latest -g && \
-    npm install n -g && \
+RUN /usr/local/bin/npm install npm@latest -g && \
+    /usr/local/bin/npm install n -g && \
     n latest
 
-RUN npm install -g \
+RUN /usr/local/bin/npm install -g \
     typescript \
     google-closure-compiler
 
@@ -19,9 +19,9 @@ COPY src ./src
 
 # TypeScript
 COPY tsconfig.json ./tsconfig.json
-RUN tsc && \
+RUN /usr/local/bin/tsc && \
     mv ./src/static/lib/main.js ./src/static/lib/main_big.js && \
-    google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
+    /usr/local/bin/google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
 
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
