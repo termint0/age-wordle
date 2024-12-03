@@ -413,6 +413,10 @@ function giveUp() {
         giveUpDiv.classList.remove("hidden");
     });
 }
+function onInfoClick() {
+    const infoTemplate = document.getElementById("info-template");
+    popupInfo(infoTemplate.innerHTML, "Okay");
+}
 function customConfirm(prompt, yesButtonText, noButtonText) {
     return new Promise((resolve) => {
         // Get dialog and buttons by their IDs or classes
@@ -421,7 +425,7 @@ function customConfirm(prompt, yesButtonText, noButtonText) {
         const yesButton = document.getElementById('prompt-yes');
         const noButton = document.getElementById('prompt-no');
         modal.classList.remove("hidden");
-        promptDiv.innerText = prompt;
+        promptDiv.innerHTML = prompt;
         yesButton.innerText = yesButtonText;
         noButton.innerText = noButtonText;
         // Attach event listeners to resolve the promise
@@ -456,8 +460,12 @@ function popupInfo(text, buttonText) {
         const infoDiv = document.getElementById('info-text');
         const button = document.getElementById('info-close');
         modal.classList.remove("hidden");
-        infoDiv.innerText = text;
-        button.innerText = buttonText;
+        if (text) {
+            infoDiv.innerHTML = text;
+        }
+        if (buttonText) {
+            button.innerText = buttonText;
+        }
         // Attach event listeners to resolve the promise
         const close = () => {
             resolve(true);
