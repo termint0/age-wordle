@@ -28,17 +28,16 @@
 </head>
 
 <body class="font-size-medium font-medium">
-  <div class="header">
+  <header>
+    <button class="header-button round">
+      <img id="info-icon" class="icon round click" src="../static/res/info.svg" alt="Info" onclick="onInfoClick();">
+    </button>
     <button class="header-button round">
       <img id="theme-icon" class="icon round click" src="../static/res/mode-light.svg" alt="Light theme"
         onclick="onThemeSwitch();">
     </button>
-    <!--<button>-->
-
-    <!--<img class="icon" src="../static/res/mode-light.svg" alt="Light theme">-->
-    <!--</button>-->
-  </div>
-  <div id="modal-prompt" class="hidden modal">
+  </header>
+  <div id="modal-prompt" class="hidden modal background-blur">
     <div class="confirm-popup bevel background-blur">
       <!--<div class="font-large bold">-->
       <!--  Do you really want to give up?-->
@@ -52,12 +51,12 @@
       </div>
     </div>
   </div>
-  <div id="modal-info" class="hidden modal">
+  <div id="modal-info" class="hidden modal background-blur">
     <div class="confirm-popup bevel background-blur">
       <!--<div class="font-large bold">-->
       <!--  Do you really want to give up?-->
       <!--</div>-->
-      <div id="info-text" class="font-medium">
+      <div id="info-text" class="info-text font-medium">
         You won't have a chance to guess until tomorrow!
       </div>
       <div class="button-row">
@@ -142,7 +141,24 @@
     setTheme();
     loadFromLocalStorage();
   </script>
+  <template id="info-template">
+    <h>Info</h>
+    <p>
+      The goal of the game is to discover the name of a mystery top player from the Age of Empires 2 community, in as
+      few attempts as possible. Every day at 04:00 UTC, a new player is selected.
+    </p>
+
+    <p>
+      You play by typing names of players. For each player name you enter, the game will show you which characteristics
+      your guessed player has in common with the mystery player, out of: Age, country, total prize money earned,
+      activity span, number of 1v1 and TG games played on the DE ranked ladder, highest Elo achieved on voobly, and team
+      history. You win once you found the mystery player, and you can comeback the next day for a new attempt.
+    </p>
+    <p>The project's codebase is open-source and can be found at <a
+        href="https://github.com/termint0/age-wordle">https://github.com/termint0/age-wordle</a>. Feel free to
+      contribute via PR or create your own forks.</p>
+  </template>
   <footer>
-      made by me - <a href="/about">about</a>
+    made by me - <a href="/about">about</a>
   </footer>
 </body>
