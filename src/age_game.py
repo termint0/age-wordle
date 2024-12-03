@@ -25,6 +25,9 @@ INT_COLUMNS = [
 LIST_COLUMNS = ["country", "teams"]
 STR_COLUMNS = ["name", "spelling"]
 
+HASH_MOD = 567876
+HASH_BASE = 8673 
+
 MISSING_STR_VAL = ""
 MISSING_INT_VAL = -1
 TIL_PRESENT_VAL = 100000
@@ -268,7 +271,7 @@ class Game:
         self.local_idx = 0
 
         self._set_current(0)
-        self._game_hash = hash(self._curr.values())
+        self._game_hash = self._hash(self._curr)
 
     def change_player(self):
         """Changes the player across worker threads to a random player"""
@@ -328,6 +331,17 @@ class Game:
         }
         return response
 
+
+    @staticmethod
+    def _hash(d: dict) -> int:
+        dict_hash = 0
+        for i, col in enumerate(INT_COLUMNS):
+            dict_hash = (dict_hash + d[col] * pow(HASH_BASE, i, HASH_MOD)) % HASH_MOD
+
+        return dict_hash
+            
+
+
     def _set_current(self, idx: int) -> None:
         """Sets current player to the one at idx
         Args:
@@ -337,4 +351,4 @@ class Game:
         curr_series: pd.Series = self.player_df.loc[name.lower()]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
-        self._game_hash = hash(self._curr.values())
+        self._game_hash = self._hash(self._curr)
