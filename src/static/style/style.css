@@ -49,8 +49,7 @@ body {
 }
 
 .theme-dark {
-  /*background-image: url("/static/res/bg_night_blur.jpg");*/
-  background-image: url("/static/res/bg_night_blur_darker.jpg");
+  background-image: url("/static/res/bg_night_blur.jpg");
   --col-header: #1a191c;
   --col-text: #d8d8d8;
   --col-text-2: #898989;
