@@ -346,6 +346,15 @@ function loadFromLocalStorage() {
         }
     });
 }
+function onFirstLoad() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (localStorage.getItem("attempted")) {
+            return;
+        }
+        localStorage.setItem("attempted", "true");
+        fetch("/api/log-start", { method: "POST" });
+    });
+}
 function onGameReset() {
     localStorage.removeItem("hash");
     localStorage.removeItem("state");
