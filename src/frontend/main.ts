@@ -57,8 +57,15 @@ async function loadFromLocalStorage(): Promise<void> {
       onCorrectGuess();
     }
   }
-
 }
+
+async function onFirstLoad(): Promise<void> {
+  if (localStorage.getItem("attempted")) {
+    return;
+  }
+  localStorage.setItem("attempted", "true");
+  fetch("/api/log-start", {method: "POST"});
+} 
 
 function onGameReset(): void {
   localStorage.removeItem("hash");

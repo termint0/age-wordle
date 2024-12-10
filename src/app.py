@@ -38,13 +38,22 @@ game.change_player()
 
 schedule.every().day.at("04:00", "UTC").do(game.change_player)
 
+attempts = Value('i', 0)
 
+@app.route("/api/log-start", methods=["POST"])
+def log_start():
+    global attempts
+    attempts.value += 1
+    return ""
 
 
 @app.route("/api/guesses-today")
 def get_correct_guesses():
     return flask.jsonify({"count": correct_guesses.value})
 
+@app.route("/api/attempts-today")
+def get_attempts():
+    return flask.jsonify({"count": attempts.value})
 
 @app.route("/api/goal-player-info")
 def get_goal_player_info():
