@@ -20,8 +20,9 @@ COPY src ./src
 # TypeScript
 COPY tsconfig.json ./tsconfig.json
 RUN /usr/local/bin/tsc && \
-    mv ./src/static/lib/main.js ./src/static/lib/main_big.js && \
-    /usr/local/bin/google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
+    mv ./src/static/lib/main.js ./src/static/lib/main_big.js
+
+RUN /usr/local/bin/google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
 
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
