@@ -90,21 +90,8 @@ def guess(name: str):
     "/api/hint/<key>",
 )
 def hint(key: str):
-    # start_time = time.process_time()
     val = game.get_current_player().get(key)
     return flask.jsonify({"value": val})
-
-
-@app.route("/api/multiguess")
-def multiguess():
-    names = flask.request.args.get("names")
-    if names is None:
-        return flask.jsonify("Player not found", 404)
-    names = names.split(",")
-    response = [game.guess(name) for name in names]
-    response = [x for x in response if x]
-
-    return flask.jsonify(response)
 
 
 @app.route("/api/give-up")
