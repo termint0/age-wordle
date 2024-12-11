@@ -74,7 +74,7 @@ def get_age(born: int) -> int:
     return diff_years
 
 def normalize_name(name: str) -> str:
-    return name.lower().replace(" ", "").replace("_", "").replace("-", "")
+    return name.strip().lower().replace(" ", "").replace("_", "").replace("-", "")
 
 
 
@@ -137,7 +137,7 @@ def add_aliases(player_df: pd.DataFrame) -> dict[str, str]:
             continue
 
         for alias in player["spelling"].split(","):
-            player_aliases[alias.strip().lower()] = player["name_normalized"]
+            player_aliases[normalize_name(alias)] = player["name_normalized"]
     return player_aliases
 
 
@@ -325,7 +325,7 @@ class Game:
                 return None
             name = self.player_aliases[name]
         curr = self.get_current_player()
-        correct_guess = name == curr["name"].lower()
+        correct_guess = name == normalize_name(curr["name"])
         guessed = get_guess_info(self.player_df, name)
         response = {
             "hash": self._game_hash,
@@ -353,7 +353,7 @@ class Game:
             idx: number < self.player_df.shape[0]
         """
         name = self.pickable_players[idx]
-        curr_series: pd.Series = self.player_df.loc[name.lower()]
+        curr_series: pd.Series = self.player_df.loc[normalize_name(name)]
         self._curr: dict[str, Any] = json.loads(curr_series.to_json())
         self.local_idx = idx
         self._game_hash = self._hash(self._curr)
