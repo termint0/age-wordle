@@ -126,7 +126,8 @@ function onCorrectGuess(): void {
   const input = document.getElementById("input-container");
   const congratsElem = document.getElementById("congrats-div");
   const guessCountElem = document.getElementById("guess-count");
-  if (input === null || congratsElem === null || guessCountElem === null) {
+  const hintCountElem = document.getElementById("hint-count");
+  if (input === null || congratsElem === null || guessCountElem === null || hintCountElem === null) {
     throw new Error("Input area's HTML element names changes aren't reflected in JS!");
   }
 
@@ -136,6 +137,15 @@ function onCorrectGuess(): void {
   } else {
     guessCountElem.innerText = guessCount + " tries"
   }
+
+  const hintCount = localStorage.getItem("hintCount");
+  if (hintCount === "1") {
+    hintCountElem.innerText = "and used one hint.";
+  } else if (hintCount) {
+    hintCountElem.innerText = "and used" + hintCount + "hints.";
+  }
+  
+
   input.classList.add("hidden");
   congratsElem.classList.remove("hidden");
 }
