@@ -21,6 +21,7 @@ const MULTI_ITEM_VALUES = {
     "country": "goal-country",
     "teams": "goal-teams"
 };
+const HINT_ORDER = [["played_1v1", "played_tg", "voobly_elo"], ["start_year", "end_year"], ["earnings"], ["age", "country"], ["teams"]];
 const DEFAULT_WIDTH = 80;
 const WIDTH_VARIANCE = 20;
 const LARGE_FONT_DIV_SCALE = 1.4;
@@ -32,11 +33,16 @@ function getWidth() {
  */
 function getInfo() {
     return __awaiter(this, void 0, void 0, function* () {
+        const lsLengths = localStorage.getItem("goalLengths");
+        if (lsLengths) {
+            return JSON.parse(lsLengths);
+        }
         const resp = yield fetch("/api/goal-player-info");
         if (resp.status !== 200) {
             throw new Error("Couldn't get goal player info");
         }
         const respJson = yield resp.json();
+        localStorage.setItem("goalLengths", JSON.stringify(respJson));
         return respJson;
     });
 }
@@ -47,6 +53,36 @@ function createObfuscatedItem() {
     const item = createValueItem("");
     item.classList.add("obfuscated");
     return item;
+}
+function setSingleItem(key, value) {
+    const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+    if (key === "name") {
+        valueDiv.innerText = value.toString();
+        valueDiv.classList.remove("obfuscated");
+        valueDiv.style.width = "";
+        return;
+    }
+    const item = valueDiv.children[0];
+    item.innerText = valFromInt(value);
+    if (key === "end_year" && value === END_YEAR_PRESENT_VAL) {
+        item.innerText = "present";
+    }
+    item.classList.remove("obfuscated");
+    item.classList.add("correct");
+    item.style.width = "";
+}
+function setMultiItem(key, value) {
+    const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
+    for (let i = 0; i < valueDiv.children.length; ++i) {
+        if (value[i] === null) {
+            continue;
+        }
+        const item = valueDiv.children[i];
+        item.innerText = value[i].toString();
+        item.classList.remove("obfuscated");
+        item.classList.add("correct");
+        item.style.width = "";
+    }
 }
 /**
  * Gets the goal player's info from the API and sets the value items' width to match
@@ -81,37 +117,71 @@ function populateGoalPlayer() {
  */
 function changeGoalPlayer(player) {
     for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
-        if (player[key] === null) {
+        if (player[key] === null || player[key] === undefined) {
             continue;
         }
-        const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
-        if (key === "name") {
-            valueDiv.innerText = player[key].toString();
-            valueDiv.classList.remove("obfuscated");
-            valueDiv.style.width = "";
-            continue;
-        }
-        const item = valueDiv.children[0];
-        item.innerText = valFromInt(player[key]);
-        if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
-            item.innerText = "present";
-        }
-        item.classList.remove("obfuscated");
-        item.classList.add("correct");
-        item.style.width = "";
+        setSingleItem(key, player[key]);
     }
     for (const key of Object.keys(MULTI_ITEM_VALUES)) {
-        const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
-        for (let i = 0; i < valueDiv.children.length; ++i) {
-            if (player[key][i] === null) {
-                continue;
-            }
-            const item = valueDiv.children[i];
-            item.innerText = player[key][i].toString();
-            item.classList.remove("obfuscated");
-            item.classList.add("correct");
-            item.style.width = "";
+        setMultiItem(key, player[key]);
+    }
+}
+function isElemGuessed(key) {
+    if (key in SINGLE_ITEM_VALUES) {
+        let elem = document.getElementById(SINGLE_ITEM_VALUES[key]);
+        return !elem.firstElementChild.classList.contains("obfuscated");
+    }
+    else if (key in MULTI_ITEM_VALUES) {
+        let elem = document.getElementById(MULTI_ITEM_VALUES[key]);
+        return Array.from(elem.children)
+            .map((e) => !e.classList.contains("obfuscated"))
+            .every(x => x);
+    }
+    throw new Error("DOM element keys changed, could not find: " + key);
+}
+function onHintClick() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(yield customConfirm("Are you sure you want to take a hint? By using it, you're waiving your bragging rights!", "Take the hint", "Keep trying"))) {
+            return;
         }
+        const hints = localStorage.getItem("hintCount") || "0";
+        const newCount = Number(hints) + 1;
+        localStorage.setItem("hintCount", newCount.toString());
+        for (let i = 0; i < HINT_ORDER.length; i++) {
+            const group = HINT_ORDER[i];
+            if (group.map((key) => isElemGuessed(key)).some(x => !x)) {
+                hintForGroup(group);
+                return;
+            }
+        }
+        popupInfo("You're literally out of hints, maybe try to guess the thing or something", "Okay");
+    });
+}
+function fetchHint(key) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resp = yield fetch("/api/hint/" + key);
+        const respJson = yield resp.json();
+        return respJson["value"];
+    });
+}
+function hintForGroup(group) {
+    group.forEach(key => {
+        fetchHint(key)
+            .then(val => {
+            const hintLs = localStorage.getItem("hints");
+            const hintLsJson = hintLs ? JSON.parse(hintLs) : {};
+            hintLsJson[key] = val;
+            localStorage.setItem("hints", JSON.stringify(hintLsJson));
+            val === null ? null : applyHint(key, val);
+        });
+    });
+}
+function applyHint(key, value) {
+    if (key in SINGLE_ITEM_VALUES) {
+        setSingleItem(key, value);
+    }
+    else if (key in MULTI_ITEM_VALUES) {
+        setMultiItem(key, value);
     }
 }
 /**
@@ -143,9 +213,10 @@ function addGuessedPlayer(serverResponse) {
     }
     const playerElem = createPlayerElement(player, evaluation);
     playersDiv.prepend(playerElem);
-    let lsGuesses = localStorage.getItem("guesses");
-    lsGuesses = !lsGuesses ? player.name : lsGuesses + "," + player.name;
-    localStorage.setItem("guesses", lsGuesses);
+    const lsGuesses = localStorage.getItem("guesses");
+    const lsGuessesJson = lsGuesses ? JSON.parse(lsGuesses) : { "guesses": [] };
+    lsGuessesJson["guesses"].push(serverResponse);
+    localStorage.setItem("guesses", JSON.stringify(lsGuessesJson));
 }
 /**
  * Creates the HTML Element from the Player and GuessEvaluation objects
@@ -153,14 +224,38 @@ function addGuessedPlayer(serverResponse) {
 function createPlayerElement(player, evaluation) {
     const playerDiv = document.createElement("div");
     playerDiv.classList.add("player", "background-blur");
-    const nameDiv = document.createElement("div");
-    nameDiv.classList.add("name", "font-large", "bold");
-    nameDiv.textContent = player.name;
-    const playerInfo = document.createElement("div");
-    playerInfo.classList.add("player-info");
-    playerInfo.append(createAgeElement(player, evaluation), createCountriesElement(player, evaluation), createEarningsElement(player, evaluation), createStartYearElement(player, evaluation), createEndYearElement(player, evaluation), create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createVooblyElement(player, evaluation), createTeamsElement(player, evaluation));
-    playerDiv.append(nameDiv, playerInfo);
+    playerDiv.append(createPersonalInfoPiece(player, evaluation), createActivityPiece(player, evaluation), createGameStatsPiece(player, evaluation), createTeamsPiece(player, evaluation));
     return playerDiv;
+}
+function createPersonalInfoPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.classList.remove("font-medium");
+    description.classList.add("name", "font-large", "bold");
+    description.innerHTML = player.name;
+    pieceDiv.children[1].append(createAgeElement(player, evaluation), createCountriesElement(player, evaluation), createEarningsElement(player, evaluation));
+    return pieceDiv;
+}
+function createActivityPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Active:";
+    pieceDiv.children[1].append(createStartYearElement(player, evaluation), createEndYearElement(player, evaluation));
+    return pieceDiv;
+}
+function createGameStatsPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Game Stats:";
+    pieceDiv.children[1].append(create1v1sElement(player, evaluation), createTgsElement(player, evaluation), createVooblyElement(player, evaluation));
+    return pieceDiv;
+}
+function createTeamsPiece(player, evaluation) {
+    const pieceDiv = createPlayerPiece();
+    const description = pieceDiv.children[0];
+    description.innerHTML = "Teams:";
+    pieceDiv.children[1].append(createTeamsElement(player, evaluation));
+    return pieceDiv;
 }
 function createAgeElement(player, evaluation) {
     const elem = createValueElement();
@@ -174,7 +269,7 @@ function createAgeElement(player, evaluation) {
 }
 function createStartYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Active since:";
+    elem.children[0].innerHTML = "Since:";
     const values = elem.children[1];
     const content = valFromInt(player.start_year);
     const item = createValueItem(content);
@@ -184,7 +279,7 @@ function createStartYearElement(player, evaluation) {
 }
 function createEndYearElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Active til:";
+    elem.children[0].innerHTML = "Til:";
     const values = elem.children[1];
     let content;
     if (player.end_year === END_YEAR_PRESENT_VAL) {
@@ -253,7 +348,7 @@ function createVooblyElement(player, evaluation) {
 }
 function createTeamsElement(player, evaluation) {
     const elem = createValueElement();
-    elem.children[0].innerHTML = "Teams:";
+    elem.children[0].innerHTML = "";
     const values = elem.children[1];
     for (let i = 0; i < player.teams.length; ++i) {
         const team = player.teams[i];
@@ -284,31 +379,27 @@ function getGameHash() {
 function onGameTimeout() {
     popupInfo("The game timed out. A new player has been chosen", "close");
 }
-function makeInitialGuess(names) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!names) {
-            return [];
-        }
-        const resp = yield fetch("/api/multiguess?names=" + names);
-        if (resp.status !== 200) {
-            return [];
-        }
-        const respJson = yield resp.json();
-        return respJson;
-    });
+function makeInitialGuess() {
+    const item = localStorage.getItem("guesses");
+    if (!item) {
+        return [];
+    }
+    const itemJson = JSON.parse(item);
+    return itemJson["guesses"];
 }
 function loadFromLocalStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         const gameHash = yield getGameHash();
         if (gameHash.toString() !== localStorage.getItem("hash")) {
             onGameReset();
+            localStorage.setItem("hash", gameHash.toString());
         }
+        yield populateGoalPlayer();
         const givenUp = localStorage.getItem("state") === "givenUp";
         if (givenUp) {
             giveUp();
         }
-        const playersStr = localStorage.getItem("guesses") || "";
-        const players = yield makeInitialGuess(playersStr);
+        const players = makeInitialGuess();
         const playersDiv = document.getElementById("guessed-players");
         if (playersDiv === null) {
             return;
@@ -320,13 +411,26 @@ function loadFromLocalStorage() {
                 onCorrectGuess();
             }
         }
+        const hints = localStorage.getItem("hints");
+        if (hints) {
+            const hintsJson = JSON.parse(hints);
+            Object.keys(hintsJson).forEach(key => applyHint(key, hintsJson[key]));
+        }
+    });
+}
+function onFirstLoad() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (localStorage.getItem("attempted")) {
+            return;
+        }
+        localStorage.setItem("attempted", "true");
+        fetch("/api/log-start", { method: "POST" });
     });
 }
 function onGameReset() {
-    localStorage.removeItem("hash");
-    localStorage.removeItem("state");
-    localStorage.removeItem("guessCount");
-    localStorage.removeItem("guesses");
+    const theme = localStorage.getItem("theme") || "";
+    localStorage.clear();
+    localStorage.setItem("theme", theme);
     const playersDiv = document.getElementById("guessed-players");
     if (playersDiv === null) {
         return;
@@ -493,6 +597,16 @@ function popupInfo(text, buttonText) {
 //const CHEVRON_DOWN = "&#x25BC;" as const;
 const END_YEAR_PRESENT_VAL = 100000;
 const NOT_KNOWN_VAL = -1;
+function createPlayerPiece() {
+    const groupPiece = document.createElement("div");
+    groupPiece.classList.add("player-div-piece");
+    const description = document.createElement("div");
+    description.classList.add("font-medium", "player-div-piece-description");
+    const infoGroup = document.createElement("div");
+    infoGroup.classList.add("player-info-group");
+    groupPiece.append(description, infoGroup);
+    return groupPiece;
+}
 /**
  * Creates an HTML Element for one statistic (e.g. Age)
  * with a description div and a value container div

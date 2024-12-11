@@ -1,5 +1,5 @@
 import logging
-import random 
+import random
 from threading import Thread
 from multiprocessing import Value
 import time
@@ -38,12 +38,24 @@ game.change_player()
 
 schedule.every().day.at("04:00", "UTC").do(game.change_player)
 
+attempts = Value("i", 0)
 
+
+@app.route("/api/log-start", methods=["POST"])
+def log_start():
+    global attempts
+    attempts.value += 1
+    return ""
 
 
 @app.route("/api/guesses-today")
 def get_correct_guesses():
     return flask.jsonify({"count": correct_guesses.value})
+
+
+@app.route("/api/attempts-today")
+def get_attempts():
+    return flask.jsonify({"count": attempts.value})
 
 
 @app.route("/api/goal-player-info")
@@ -74,16 +86,12 @@ def guess(name: str):
     return flask.jsonify(response)
 
 
-@app.route("/api/multiguess")
-def multiguess():
-    names = flask.request.args.get("names")
-    if names is None:
-        return flask.jsonify("Player not found", 404)
-    names = names.split(",")
-    response = [game.guess(name) for name in names]
-    response = [x for x in response if x]
-
-    return flask.jsonify(response)
+@app.route(
+    "/api/hint/<key>",
+)
+def hint(key: str):
+    val = game.get_current_player().get(key)
+    return flask.jsonify({"value": val})
 
 
 @app.route("/api/give-up")

@@ -26,9 +26,10 @@ function addGuessedPlayer(serverResponse: ServerResp): void {
   }
   const playerElem = createPlayerElement(player, evaluation);
   playersDiv.prepend(playerElem);
-  let lsGuesses = localStorage.getItem("guesses");
-  lsGuesses = !lsGuesses ? player.name : lsGuesses + "," + player.name;
-  localStorage.setItem("guesses", lsGuesses);
+  const lsGuesses = localStorage.getItem("guesses");
+  const lsGuessesJson = lsGuesses ? JSON.parse(lsGuesses) : { "guesses": [] };
+  lsGuessesJson["guesses"].push(serverResponse);
+  localStorage.setItem("guesses", JSON.stringify(lsGuessesJson));
 }
 
 /**
@@ -38,29 +39,61 @@ function createPlayerElement(player: Player, evaluation: GuessEvaluation): HTMLD
   const playerDiv = document.createElement("div");
   playerDiv.classList.add("player", "background-blur");
 
-  const nameDiv = document.createElement("div");
-  nameDiv.classList.add("name", "font-large", "bold");
-  nameDiv.textContent = player.name;
+  playerDiv.append(
+    createPersonalInfoPiece(player, evaluation),
+    createActivityPiece(player, evaluation),
+    createGameStatsPiece(player, evaluation),
+    createTeamsPiece(player, evaluation),
+  )
 
-  const playerInfo = document.createElement("div");
-  playerInfo.classList.add("player-info");
-  playerInfo.append(
+  return playerDiv;
+}
+
+function createPersonalInfoPiece(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
+  const pieceDiv = createPlayerPiece();
+  const description = pieceDiv.children[0];
+  description.classList.remove("font-medium")
+  description.classList.add("name", "font-large", "bold")
+  description.innerHTML = player.name;
+  pieceDiv.children[1].append(
     createAgeElement(player, evaluation),
     createCountriesElement(player, evaluation),
     createEarningsElement(player, evaluation),
+  )
+  return pieceDiv;
+}
 
+function createActivityPiece(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
+  const pieceDiv = createPlayerPiece();
+  const description = pieceDiv.children[0];
+  description.innerHTML = "Active:";
+  pieceDiv.children[1].append(
     createStartYearElement(player, evaluation),
     createEndYearElement(player, evaluation),
+  )
+  return pieceDiv;
+}
 
+function createGameStatsPiece(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
+  const pieceDiv = createPlayerPiece();
+  const description = pieceDiv.children[0];
+  description.innerHTML = "Game Stats:";
+  pieceDiv.children[1].append(
     create1v1sElement(player, evaluation),
     createTgsElement(player, evaluation),
     createVooblyElement(player, evaluation),
+  )
+  return pieceDiv;
+}
 
+function createTeamsPiece(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
+  const pieceDiv = createPlayerPiece();
+  const description = pieceDiv.children[0];
+  description.innerHTML = "Teams:";
+  pieceDiv.children[1].append(
     createTeamsElement(player, evaluation)
   )
-  playerDiv.append(nameDiv, playerInfo);
-
-  return playerDiv;
+  return pieceDiv;
 }
 
 function createAgeElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
@@ -79,7 +112,7 @@ function createAgeElement(player: Player, evaluation: GuessEvaluation): HTMLDivE
 
 function createStartYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
-  elem.children[0].innerHTML = "Active since:";
+  elem.children[0].innerHTML = "Since:";
   const values = elem.children[1]
   const content = valFromInt(player.start_year)
   const item = createValueItem(content);
@@ -92,7 +125,7 @@ function createStartYearElement(player: Player, evaluation: GuessEvaluation): HT
 
 function createEndYearElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
-  elem.children[0].innerHTML = "Active til:";
+  elem.children[0].innerHTML = "Til:";
   const values = elem.children[1]
   let content: string;
   if (player.end_year === END_YEAR_PRESENT_VAL) {
@@ -176,7 +209,7 @@ function createVooblyElement(player: Player, evaluation: GuessEvaluation): HTMLD
 
 function createTeamsElement(player: Player, evaluation: GuessEvaluation): HTMLDivElement {
   const elem = createValueElement();
-  elem.children[0].innerHTML = "Teams:";
+  elem.children[0].innerHTML = "";
   const values = elem.children[1]
   for (let i = 0; i < player.teams.length; ++i) {
     const team = player.teams[i];

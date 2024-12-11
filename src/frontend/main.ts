@@ -17,32 +17,30 @@ function onGameTimeout() {
   popupInfo("The game timed out. A new player has been chosen", "close");
 }
 
-async function makeInitialGuess(names: string): Promise<ServerResp[]> {
-  if (!names) {
-    return [];
-
-  }
-  const resp = await fetch("/api/multiguess?names=" + names);
-  if (resp.status !== 200) {
+function makeInitialGuess(): ServerResp[] {
+  const item = localStorage.getItem("guesses");
+  if (!item) {
     return [];
   }
-  const respJson = await resp.json();
-  return respJson;
+  const itemJson = JSON.parse(item);
+  return itemJson["guesses"];
 }
 
 async function loadFromLocalStorage(): Promise<void> {
   const gameHash = await getGameHash();
   if (gameHash.toString() !== localStorage.getItem("hash")) {
     onGameReset();
+    localStorage.setItem("hash", gameHash.toString());
   }
+
+  await populateGoalPlayer();
 
   const givenUp = localStorage.getItem("state") === "givenUp"
   if (givenUp) {
     giveUp();
   }
 
-  const playersStr: string = localStorage.getItem("guesses") || ""
-  const players = await makeInitialGuess(playersStr);
+  const players = makeInitialGuess();
 
   const playersDiv = document.getElementById("guessed-players");
   if (playersDiv === null) {
@@ -57,14 +55,25 @@ async function loadFromLocalStorage(): Promise<void> {
       onCorrectGuess();
     }
   }
+  const hints = localStorage.getItem("hints");
+  if (hints) {
+    const hintsJson = JSON.parse(hints);
+    Object.keys(hintsJson).forEach(key => applyHint(key, hintsJson[key]));
+  }
+}
 
+async function onFirstLoad(): Promise<void> {
+  if (localStorage.getItem("attempted")) {
+    return;
+  }
+  localStorage.setItem("attempted", "true");
+  fetch("/api/log-start", { method: "POST" });
 }
 
 function onGameReset(): void {
-  localStorage.removeItem("hash");
-  localStorage.removeItem("state");
-  localStorage.removeItem("guessCount");
-  localStorage.removeItem("guesses");
+  const theme = localStorage.getItem("theme") || "";
+  localStorage.clear();
+  localStorage.setItem("theme", theme);
 
   const playersDiv = document.getElementById("guessed-players");
   if (playersDiv === null) {

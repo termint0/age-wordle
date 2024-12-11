@@ -73,6 +73,10 @@ def get_age(born: int) -> int:
     diff_years = int(this_year - born)
     return diff_years
 
+def normalize_name(name: str) -> str:
+    return name.lower().replace(" ", "").replace("_", "").replace("-", "")
+
+
 
 def get_countries(df: pd.DataFrame) -> pd.DataFrame:
     """Transform "country" column from codes into "<flag> <name>" format
@@ -108,7 +112,7 @@ def get_player_df() -> pd.DataFrame:
     player_df = pd.read_csv(PLAYERS_FILE, delimiter=";")
     player_df = fix_nan(player_df)
     player_df = get_countries(player_df)
-    player_df["name_lowercase"] = [a.lower() for a in player_df["name"]]
+    player_df["name_normalized"] = [normalize_name(a) for a in player_df["name"]]
     player_df["age"] = [get_age(a) for a in player_df["born"]]
     player_df["end_year"] = player_df["end_year"].replace(MISSING_INT_VAL, TIL_PRESENT_VAL)
     player_df["teams"] = [
@@ -121,7 +125,7 @@ def add_aliases(player_df: pd.DataFrame) -> dict[str, str]:
     """Creates a list of player aliases from player df
 
     Args:
-        player_df: DataFrame with "spelling" and "name_lowercase" keys
+        player_df: DataFrame with "spelling" and "name_normalized" keys
 
     Returns: a dictionary in the format {"max": "TheMax", "yo": "Mr_Yo"}
 
@@ -133,7 +137,7 @@ def add_aliases(player_df: pd.DataFrame) -> dict[str, str]:
             continue
 
         for alias in player["spelling"].split(","):
-            player_aliases[alias.strip().lower()] = player["name_lowercase"]
+            player_aliases[alias.strip().lower()] = player["name_normalized"]
     return player_aliases
 
 
@@ -172,6 +176,7 @@ def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
         elif key in INT_COLUMNS:
             val = goal_val - guess_val
             if val == 0 or goal_val != MISSING_INT_VAL:
+                val = val / (abs(val) or 1)
                 result[key] = val
         elif key in STR_COLUMNS:
             result[key] = goal_val == guess_val
@@ -244,7 +249,7 @@ def get_player_intersection(goal: dict, guess: dict) -> dict:
 
 
 def get_guess_info(player_df: pd.DataFrame, guess: str) -> dict[str, Any]:
-    """Gets the row where name_lowercase = guess and makes it jsonifiable (removes np.int64 and stuff)
+    """Gets the row where name_normalized = guess and makes it jsonifiable (removes np.int64 and stuff)
 
     Args:
         player_df: df to get row from
@@ -267,7 +272,7 @@ class Game:
         self.player_df = get_player_df()
         self.pickable_players = get_pickable_players()
         self.player_aliases: dict[str, str] = add_aliases(self.player_df)
-        self.player_df = self.player_df.set_index("name_lowercase")
+        self.player_df = self.player_df.set_index("name_normalized")
         self.local_idx = 0
 
         self._set_current(0)
@@ -314,7 +319,7 @@ class Game:
 
 
         """
-        name = name.lower()
+        name = normalize_name(name)
         if name not in self.player_df.index:
             if name not in self.player_aliases:
                 return None
