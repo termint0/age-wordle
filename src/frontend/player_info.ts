@@ -97,7 +97,7 @@ function createValueItem(content: string): HTMLDivElement {
 /**
  * A int to str function that handles unknown values
  */
-function valFromInt(val: number): string {
+function valFromInt(val: number | string): string {
   if (val === NOT_KNOWN_VAL) {
     return "unknown";
   } else {

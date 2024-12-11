@@ -21,6 +21,7 @@ const MULTI_ITEM_VALUES = {
     "country": "goal-country",
     "teams": "goal-teams"
 };
+const HINT_ORDER = [["played_1v1", "played_tg", "voobly_elo"], ["start_year", "end_year"], ["earnings"], ["age", "country"], ["teams"]];
 const DEFAULT_WIDTH = 80;
 const WIDTH_VARIANCE = 20;
 const LARGE_FONT_DIV_SCALE = 1.4;
@@ -47,6 +48,36 @@ function createObfuscatedItem() {
     const item = createValueItem("");
     item.classList.add("obfuscated");
     return item;
+}
+function setSingleItem(key, value) {
+    const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
+    if (key === "name") {
+        valueDiv.innerText = value.toString();
+        valueDiv.classList.remove("obfuscated");
+        valueDiv.style.width = "";
+        return;
+    }
+    const item = valueDiv.children[0];
+    item.innerText = valFromInt(value);
+    if (key === "end_year" && value === END_YEAR_PRESENT_VAL) {
+        item.innerText = "present";
+    }
+    item.classList.remove("obfuscated");
+    item.classList.add("correct");
+    item.style.width = "";
+}
+function setMultiItem(key, value) {
+    const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
+    for (let i = 0; i < valueDiv.children.length; ++i) {
+        if (value[i] === null) {
+            continue;
+        }
+        const item = valueDiv.children[i];
+        item.innerText = value[i].toString();
+        item.classList.remove("obfuscated");
+        item.classList.add("correct");
+        item.style.width = "";
+    }
 }
 /**
  * Gets the goal player's info from the API and sets the value items' width to match
@@ -81,37 +112,71 @@ function populateGoalPlayer() {
  */
 function changeGoalPlayer(player) {
     for (const key of Object.keys(SINGLE_ITEM_VALUES)) {
-        if (player[key] === null) {
+        if (player[key] === null || player[key] === undefined) {
             continue;
         }
-        const valueDiv = document.getElementById(SINGLE_ITEM_VALUES[key]);
-        if (key === "name") {
-            valueDiv.innerText = player[key].toString();
-            valueDiv.classList.remove("obfuscated");
-            valueDiv.style.width = "";
-            continue;
-        }
-        const item = valueDiv.children[0];
-        item.innerText = valFromInt(player[key]);
-        if (key === "end_year" && player[key] === END_YEAR_PRESENT_VAL) {
-            item.innerText = "present";
-        }
-        item.classList.remove("obfuscated");
-        item.classList.add("correct");
-        item.style.width = "";
+        setSingleItem(key, player[key]);
     }
     for (const key of Object.keys(MULTI_ITEM_VALUES)) {
-        const valueDiv = document.getElementById(MULTI_ITEM_VALUES[key]);
-        for (let i = 0; i < valueDiv.children.length; ++i) {
-            if (player[key][i] === null) {
-                continue;
-            }
-            const item = valueDiv.children[i];
-            item.innerText = player[key][i].toString();
-            item.classList.remove("obfuscated");
-            item.classList.add("correct");
-            item.style.width = "";
+        setMultiItem(key, player[key]);
+    }
+}
+function isElemGuessed(key) {
+    if (key in SINGLE_ITEM_VALUES) {
+        let elem = document.getElementById(SINGLE_ITEM_VALUES[key]);
+        return !elem.firstElementChild.classList.contains("obfuscated");
+    }
+    else if (key in MULTI_ITEM_VALUES) {
+        let elem = document.getElementById(MULTI_ITEM_VALUES[key]);
+        return Array.from(elem.children)
+            .map((e) => !e.classList.contains("obfuscated"))
+            .every(x => x);
+    }
+    throw new Error("DOM element keys changed, could not find: " + key);
+}
+function onHintClick() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!(yield customConfirm("Are you sure you want to take a hint? By using it, you're waiving your bragging rights!", "Take the hint", "Keep trying"))) {
+            return;
         }
+        const hints = localStorage.getItem("hintCount") || "0";
+        const newCount = Number(hints) + 1;
+        localStorage.setItem("hintCount", newCount.toString());
+        for (let i = 0; i < HINT_ORDER.length; i++) {
+            const group = HINT_ORDER[i];
+            if (group.map((key) => isElemGuessed(key)).some(x => !x)) {
+                hintForGroup(group);
+                return;
+            }
+        }
+        popupInfo("You're literally out of hints, maybe try to guess the thing or something", "Okay");
+    });
+}
+function fetchHint(key) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resp = yield fetch("/api/hint/" + key);
+        const respJson = yield resp.json();
+        return respJson["value"];
+    });
+}
+function hintForGroup(group) {
+    group.forEach(key => {
+        fetchHint(key)
+            .then(val => {
+            const hintLs = localStorage.getItem("hints");
+            const hintLsJson = hintLs ? JSON.parse(hintLs) : {};
+            hintLsJson[key] = val;
+            localStorage.setItem("hints", JSON.stringify(hintLsJson));
+            val === null ? null : applyHint(key, val);
+        });
+    });
+}
+function applyHint(key, value) {
+    if (key in SINGLE_ITEM_VALUES) {
+        setSingleItem(key, value);
+    }
+    else if (key in MULTI_ITEM_VALUES) {
+        setMultiItem(key, value);
     }
 }
 /**
@@ -143,9 +208,10 @@ function addGuessedPlayer(serverResponse) {
     }
     const playerElem = createPlayerElement(player, evaluation);
     playersDiv.prepend(playerElem);
-    let lsGuesses = localStorage.getItem("guesses");
-    lsGuesses = !lsGuesses ? player.name : lsGuesses + "," + player.name;
-    localStorage.setItem("guesses", lsGuesses);
+    const lsGuesses = localStorage.getItem("guesses");
+    const lsGuessesJson = lsGuesses ? JSON.parse(lsGuesses) : { "guesses": [] };
+    lsGuessesJson["guesses"].push(serverResponse);
+    localStorage.setItem("guesses", JSON.stringify(lsGuessesJson));
 }
 /**
  * Creates the HTML Element from the Player and GuessEvaluation objects
@@ -308,31 +374,26 @@ function getGameHash() {
 function onGameTimeout() {
     popupInfo("The game timed out. A new player has been chosen", "close");
 }
-function makeInitialGuess(names) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!names) {
-            return [];
-        }
-        const resp = yield fetch("/api/multiguess?names=" + names);
-        if (resp.status !== 200) {
-            return [];
-        }
-        const respJson = yield resp.json();
-        return respJson;
-    });
+function makeInitialGuess() {
+    const item = localStorage.getItem("guesses");
+    if (!item) {
+        return [];
+    }
+    const itemJson = JSON.parse(item);
+    return itemJson["guesses"];
 }
 function loadFromLocalStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         const gameHash = yield getGameHash();
         if (gameHash.toString() !== localStorage.getItem("hash")) {
             onGameReset();
+            localStorage.setItem("hash", gameHash.toString());
         }
         const givenUp = localStorage.getItem("state") === "givenUp";
         if (givenUp) {
             giveUp();
         }
-        const playersStr = localStorage.getItem("guesses") || "";
-        const players = yield makeInitialGuess(playersStr);
+        const players = makeInitialGuess();
         const playersDiv = document.getElementById("guessed-players");
         if (playersDiv === null) {
             return;
@@ -343,6 +404,11 @@ function loadFromLocalStorage() {
             if (!givenUp && resp.correct) {
                 onCorrectGuess();
             }
+        }
+        const hints = localStorage.getItem("hints");
+        if (hints) {
+            const hintsJson = JSON.parse(hints);
+            Object.keys(hintsJson).forEach(key => applyHint(key, hintsJson[key]));
         }
     });
 }
@@ -356,10 +422,9 @@ function onFirstLoad() {
     });
 }
 function onGameReset() {
-    localStorage.removeItem("hash");
-    localStorage.removeItem("state");
-    localStorage.removeItem("guessCount");
-    localStorage.removeItem("guesses");
+    const theme = localStorage.getItem("theme") || "";
+    localStorage.clear();
+    localStorage.setItem("theme", theme);
     const playersDiv = document.getElementById("guessed-players");
     if (playersDiv === null) {
         return;

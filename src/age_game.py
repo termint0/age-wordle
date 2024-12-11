@@ -172,6 +172,7 @@ def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
         elif key in INT_COLUMNS:
             val = goal_val - guess_val
             if val == 0 or goal_val != MISSING_INT_VAL:
+                val = val / (abs(val) or 1)
                 result[key] = val
         elif key in STR_COLUMNS:
             result[key] = goal_val == guess_val

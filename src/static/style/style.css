@@ -13,7 +13,7 @@
 }
 
 .font-size-medium .font-small {
-  font-size: 0.8rem;
+  font-size: 1.1rem;
 }
 
 .bold {
@@ -155,6 +155,7 @@ header {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  gap: 20px;
 }
 
 .prompt-button {
@@ -193,7 +194,7 @@ header {
   color: var(--col-text);
 }
 
-.give-up-button {
+.input-button {
   padding: 3px 20px;
   background-color: var(--col-main);
   color: var(--col-text);

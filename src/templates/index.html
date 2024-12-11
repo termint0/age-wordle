@@ -68,7 +68,10 @@
     <div id="input-container" class="input-container">
       <input id="player-input" name="" placeholder="Input player" class="round player-input font-large background-blur"
         onchange="onPlayerInput()">
-      <button class="give-up-button bevel font-small click" onclick="onGiveUpClick();">Give up</button>
+      <div class="button-row">
+        <button class="input-button bevel font-small click background-blur" onclick="onGiveUpClick();">Give up</button>
+        <button class="input-button bevel font-small click background-blur" onclick="onHintClick();">Hint</button>
+      </div>
     </div>
     <div id="congrats-div" class="hidden congrats-div bevel background-blur">
       <div class="bold font-large center">

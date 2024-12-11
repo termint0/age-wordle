@@ -26,9 +26,10 @@ function addGuessedPlayer(serverResponse: ServerResp): void {
   }
   const playerElem = createPlayerElement(player, evaluation);
   playersDiv.prepend(playerElem);
-  let lsGuesses = localStorage.getItem("guesses");
-  lsGuesses = !lsGuesses ? player.name : lsGuesses + "," + player.name;
-  localStorage.setItem("guesses", lsGuesses);
+  const lsGuesses = localStorage.getItem("guesses");
+  const lsGuessesJson = lsGuesses ? JSON.parse(lsGuesses) : { "guesses": [] };
+  lsGuessesJson["guesses"].push(serverResponse);
+  localStorage.setItem("guesses", JSON.stringify(lsGuessesJson));
 }
 
 /**
