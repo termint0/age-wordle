@@ -12,7 +12,7 @@ RUN npm install npm@latest -g && \
 
 RUN npm install -g \
     typescript \
-    google-closure-compiler
+    uglify-js
 
 # Copy in the source code
 COPY src ./src
@@ -22,7 +22,7 @@ COPY tsconfig.json ./tsconfig.json
 RUN /usr/local/bin/tsc && \
     mv ./src/static/lib/main.js ./src/static/lib/main_big.js
 
-RUN /usr/local/bin/google-closure-compiler --js ./src/static/lib/main_big.js --js_output_file ./src/static/lib/main.js
+RUN uglifyjs -c -m --output ./src/static/lib/main.js -- ./src/static/lib/main_big.js 
 
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
