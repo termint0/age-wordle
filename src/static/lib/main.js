@@ -33,11 +33,16 @@ function getWidth() {
  */
 function getInfo() {
     return __awaiter(this, void 0, void 0, function* () {
+        const lsLengths = localStorage.getItem("goalLengths");
+        if (lsLengths) {
+            return JSON.parse(lsLengths);
+        }
         const resp = yield fetch("/api/goal-player-info");
         if (resp.status !== 200) {
             throw new Error("Couldn't get goal player info");
         }
         const respJson = yield resp.json();
+        localStorage.setItem("goalLengths", JSON.stringify(respJson));
         return respJson;
     });
 }
@@ -389,6 +394,7 @@ function loadFromLocalStorage() {
             onGameReset();
             localStorage.setItem("hash", gameHash.toString());
         }
+        yield populateGoalPlayer();
         const givenUp = localStorage.getItem("state") === "givenUp";
         if (givenUp) {
             giveUp();

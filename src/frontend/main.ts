@@ -33,6 +33,8 @@ async function loadFromLocalStorage(): Promise<void> {
     localStorage.setItem("hash", gameHash.toString());
   }
 
+  await populateGoalPlayer();
+
   const givenUp = localStorage.getItem("state") === "givenUp"
   if (givenUp) {
     giveUp();

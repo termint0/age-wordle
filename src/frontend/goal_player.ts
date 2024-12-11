@@ -28,11 +28,17 @@ function getWidth(): number {
  * Fetches the player info needed to approximate obfuscated elements' widths
  */
 async function getInfo(): Promise<GoalPlayerLengths> {
+  const lsLengths = localStorage.getItem("goalLengths");
+  if (lsLengths) {
+    return JSON.parse(lsLengths);
+  }
   const resp = await fetch("/api/goal-player-info");
   if (resp.status !== 200) {
     throw new Error("Couldn't get goal player info")
   }
   const respJson = await resp.json() as GoalPlayerLengths;
+  localStorage.setItem("goalLengths", JSON.stringify(respJson));
+
   return respJson;
 }
 
