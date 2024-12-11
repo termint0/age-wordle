@@ -140,9 +140,9 @@ function onCorrectGuess(): void {
 
   const hintCount = localStorage.getItem("hintCount");
   if (hintCount === "1") {
-    hintCountElem.innerText = "and used one hint.";
+    hintCountElem.innerText = " and used 1 hint";
   } else if (hintCount) {
-    hintCountElem.innerText = "and used" + hintCount + "hints.";
+    hintCountElem.innerText = " and used " + hintCount + " hints";
   }
   
 
