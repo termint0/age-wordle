@@ -1,9 +1,3 @@
-async function incrementGuesses() {
-  const guessCount = localStorage.getItem("guessCount") || "0";
-  const newCount = Number(guessCount) + 1;
-  localStorage.setItem("guessCount", newCount.toString());
-}
-
 async function getGameHash(): Promise<number> {
   const resp = await fetch("/api/hash");
   if (resp.status !== 200) {
@@ -96,7 +90,6 @@ async function onPlayerInput(): Promise<void> {
 }
 
 async function guessPlayer(name: string): Promise<boolean> {
-  incrementGuesses();
   const resp = await fetch("/api/guess/" + name);
   if (resp.status !== 200) {
     return false;
@@ -131,8 +124,9 @@ function onCorrectGuess(): void {
     throw new Error("Input area's HTML element names changes aren't reflected in JS!");
   }
 
-  const guessCount = localStorage.getItem("guessCount") || "idk how many (error happened)";
-  if (guessCount === "1") {
+  const guesses = JSON.parse(localStorage.getItem("guesses"))['guesses'] as object[];
+  const guessCount = guesses.length;
+  if (guessCount === 1) {
     guessCountElem.innerText = "1 try"
   } else {
     guessCountElem.innerText = guessCount + " tries"
