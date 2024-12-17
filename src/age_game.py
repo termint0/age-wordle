@@ -45,7 +45,6 @@ def get_pickable_players() -> list[str]:
 
 
 def get_player_weights(player_df: pd.DataFrame, players: list[str]) -> list[float]:
-    print(player_df)
     return [math.log2(player_df.loc[player]["earnings"]) ** 2 for player in players]
 
 
@@ -287,7 +286,6 @@ class Game:
         self.pickable_players = get_pickable_players()
         self.player_weights = get_player_weights(self.player_df, self.pickable_players)
 
-
         self.local_idx = 0
 
         self._set_current(0)
@@ -297,11 +295,9 @@ class Game:
         """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
         global global_idx, correct_guesses
-        [print(a) for a in zip(self.pickable_players, self.player_weights)]
         global_idx.value = random.choices(
             range(len(self.pickable_players)), weights=self.player_weights
         )[0]
-        # global_idx.value = random.randint(0, len(self.pickable_players) - 1)
         correct_guesses.value = 0
 
     def get_current_player(self) -> dict:
