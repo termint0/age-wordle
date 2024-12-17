@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import math
 from multiprocessing import Value
 import random
 from typing import Any
@@ -26,16 +27,26 @@ LIST_COLUMNS = ["country", "teams"]
 STR_COLUMNS = ["name", "spelling"]
 
 HASH_MOD = 567876
-HASH_BASE = 8673 
+HASH_BASE = 8673
 
 MISSING_STR_VAL = ""
 MISSING_INT_VAL = -1
 TIL_PRESENT_VAL = 100000
 
+
+def normalize_name(name: str) -> str:
+    return name.strip().lower().replace(" ", "").replace("_", "").replace("-", "")
+
+
 def get_pickable_players() -> list[str]:
     with open(PICKABLE_PLAYERS_FILE) as f:
         players = json.load(f)
-    return players["players"]
+    return [normalize_name(name) for name in players["players"]]
+
+
+def get_player_weights(player_df: pd.DataFrame, players: list[str]) -> list[float]:
+    print(player_df)
+    return [math.log2(player_df.loc[player]["earnings"]) ** 2 for player in players]
 
 
 def fix_nan(df: pd.DataFrame) -> pd.DataFrame:
@@ -72,10 +83,6 @@ def get_age(born: int) -> int:
     this_year = datetime.datetime.now().year
     diff_years = int(this_year - born)
     return diff_years
-
-def normalize_name(name: str) -> str:
-    return name.strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-
 
 
 def get_countries(df: pd.DataFrame) -> pd.DataFrame:
@@ -114,7 +121,9 @@ def get_player_df() -> pd.DataFrame:
     player_df = get_countries(player_df)
     player_df["name_normalized"] = [normalize_name(a) for a in player_df["name"]]
     player_df["age"] = [get_age(a) for a in player_df["born"]]
-    player_df["end_year"] = player_df["end_year"].replace(MISSING_INT_VAL, TIL_PRESENT_VAL)
+    player_df["end_year"] = player_df["end_year"].replace(
+        MISSING_INT_VAL, TIL_PRESENT_VAL
+    )
     player_df["teams"] = [
         [a.strip() for a in b.split(",") if a] for b in player_df["teams"]
     ]
@@ -175,7 +184,9 @@ def guess_evaluation(goal: dict, guess: dict) -> dict[str, Any]:
             result[key] = [a in goal_val for a in guess_val]
         elif key in INT_COLUMNS:
             val = goal_val - guess_val
-            if val == 0 or (goal_val != MISSING_INT_VAL and guess_val != MISSING_INT_VAL):
+            if val == 0 or (
+                goal_val != MISSING_INT_VAL and guess_val != MISSING_INT_VAL
+            ):
                 val = val / (abs(val) or 1)
                 result[key] = val
         elif key in STR_COLUMNS:
@@ -270,9 +281,13 @@ correct_guesses = Value("i", 0)
 class Game:
     def __init__(self) -> None:
         self.player_df = get_player_df()
-        self.pickable_players = get_pickable_players()
         self.player_aliases: dict[str, str] = add_aliases(self.player_df)
         self.player_df = self.player_df.set_index("name_normalized")
+
+        self.pickable_players = get_pickable_players()
+        self.player_weights = get_player_weights(self.player_df, self.pickable_players)
+
+
         self.local_idx = 0
 
         self._set_current(0)
@@ -282,7 +297,11 @@ class Game:
         """Changes the player across worker threads to a random player"""
         logging.info("Changing the player")
         global global_idx, correct_guesses
-        global_idx.value = random.randint(0, len(self.pickable_players) - 1)
+        [print(a) for a in zip(self.pickable_players, self.player_weights)]
+        global_idx.value = random.choices(
+            range(len(self.pickable_players)), weights=self.player_weights
+        )[0]
+        # global_idx.value = random.randint(0, len(self.pickable_players) - 1)
         correct_guesses.value = 0
 
     def get_current_player(self) -> dict:
@@ -336,7 +355,6 @@ class Game:
         }
         return response
 
-
     @staticmethod
     def _hash(d: dict) -> int:
         dict_hash = 0
@@ -344,8 +362,6 @@ class Game:
             dict_hash = (dict_hash + d[col] * pow(HASH_BASE, i, HASH_MOD)) % HASH_MOD
 
         return dict_hash
-            
-
 
     def _set_current(self, idx: int) -> None:
         """Sets current player to the one at idx
